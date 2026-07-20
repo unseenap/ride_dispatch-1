@@ -2,6 +2,7 @@ package com.credx.dispatchhub.config;
 
 import com.credx.dispatchhub.security.CustomUserDetailsService;
 import com.credx.dispatchhub.security.JwtAuthenticationFilter;
+import com.credx.dispatchhub.security.RateLimitFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,7 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RateLimitFilter rateLimitFilter;
 
     @org.springframework.beans.factory.annotation.Value("${dispatchhub.cors.allowed-origins}")
     private String allowedOrigins;
@@ -72,7 +74,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/riders/**").authenticated()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                // Rate limiting runs before JWT parsing so throttled requests
+                // are rejected as cheaply as possible.
+                .addFilterBefore(rateLimitFilter, JwtAuthenticationFilter.class);
 
         return http.build();
     }

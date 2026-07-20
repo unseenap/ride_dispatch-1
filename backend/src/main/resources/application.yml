@@ -42,6 +42,12 @@ dispatchhub:
     per-km-rate: 1.20
     per-minute-rate: 0.25
     surge-multiplier: 1.0
+  rate-limit:
+    enabled: ${RATE_LIMIT_ENABLED:true}
+    # Per-IP token bucket on /api/auth/**: burst up to `capacity` requests,
+    # refilling at `refill-per-minute` sustained.
+    capacity: ${RATE_LIMIT_CAPACITY:10}
+    refill-per-minute: ${RATE_LIMIT_REFILL_PER_MINUTE:10}
 
 logging:
   level:

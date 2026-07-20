@@ -42,6 +42,14 @@ Validation errors (400) additionally populate `fieldErrors`:
 }
 ```
 
+### Rate limiting
+
+`/api/auth/**` endpoints are rate limited per client IP with a token bucket:
+a burst of up to 10 requests, refilling at 10 requests/minute (configurable
+via `RATE_LIMIT_CAPACITY`, `RATE_LIMIT_REFILL_PER_MINUTE`, and
+`RATE_LIMIT_ENABLED`). Throttled requests receive `429 Too Many Requests`
+with the standard error shape.
+
 ---
 
 ## Auth
