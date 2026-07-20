@@ -34,6 +34,8 @@ dispatchhub:
     # For local development use the dev profile below.
     secret: ${JWT_SECRET}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+    # Refresh tokens are opaque single-use values rotated on every refresh.
+    refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:2592000000} # 30 days
     issuer: ${JWT_ISSUER:dispatchhub-api}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}

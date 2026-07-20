@@ -74,6 +74,8 @@ Response `201 Created`:
   "token": "eyJhbGciOiJIUzI1NiJ9...",
   "tokenType": "Bearer",
   "expiresInMs": 86400000,
+  "refreshToken": "3q2xJ9kP...opaque-url-safe-base64...",
+  "refreshExpiresInMs": 2592000000,
   "user": {
     "id": 8,
     "email": "rider3@dispatchhub.com",
@@ -97,6 +99,33 @@ Request:
 Response `200 OK`: same shape as register's `AuthResponse`.
 
 Errors: `401` invalid credentials or disabled account.
+
+### `POST /api/auth/refresh`
+**Auth**: none (the refresh token itself is the credential)
+
+Exchanges a valid refresh token for a new access + refresh token pair.
+Refresh tokens are opaque, single-use, and rotated on every call: the
+presented token is revoked and a replacement is returned. Presenting an
+already-used (rotated) token revokes **all** of that user's refresh tokens,
+on the assumption the token was stolen.
+
+Request:
+```json
+{ "refreshToken": "3q2xJ9kP...opaque-url-safe-base64..." }
+```
+
+Response `200 OK`: same shape as register's `AuthResponse`.
+
+Errors: `401` unknown, revoked, or expired refresh token, or disabled account.
+
+### `POST /api/auth/logout`
+**Auth**: any authenticated user
+
+Revokes every active refresh token belonging to the caller ("log out
+everywhere"). The current access token is not invalidated — it simply
+expires on its own (`expiresInMs`).
+
+Response `204 No Content`.
 
 ---
 
