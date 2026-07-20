@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -39,6 +39,10 @@ const PLACEHOLDER_DROPOFF = { lat: 37.7849, lng: -122.4094 };
   styleUrl: './request-ride.component.scss'
 })
 export class RequestRideComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
+  private readonly tripService = inject(TripService);
+  private readonly router = inject(Router);
+
   readonly form = this.fb.group({
     pickupAddress: ['', [Validators.required]],
     dropoffAddress: ['']
@@ -47,12 +51,6 @@ export class RequestRideComponent implements OnInit {
   readonly fareEstimate = signal<FareEstimateResponse | null>(null);
   readonly submitting = signal(false);
   readonly submitError = signal<string | null>(null);
-
-  constructor(
-    private fb: FormBuilder,
-    private tripService: TripService,
-    private router: Router
-  ) {}
 
   ngOnInit(): void {
     // Kicks off a single fare estimate on load. The form does not currently
