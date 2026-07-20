@@ -4,26 +4,51 @@
       <span class="brand-mark" aria-hidden="true"><mat-icon>local_taxi</mat-icon></span>
       <span class="brand-copy">
         <strong>DispatchHub</strong>
-        <small>Operations</small>
+        <small>Mobility operations</small>
       </span>
     </div>
 
-    <div class="nav-label">Workspace</div>
-    <mat-nav-list>
-      @for (link of navLinks(); track link.path) {
-        <a mat-list-item [routerLink]="link.path" routerLinkActive="active-link">
-          <mat-icon matListItemIcon>{{ link.icon }}</mat-icon>
-          <span matListItemTitle>{{ link.label }}</span>
-        </a>
-      }
-    </mat-nav-list>
+    @if (currentUser(); as user) {
+      <div class="workspace-identity">
+        <span class="workspace-avatar" aria-hidden="true">{{ user.fullName.charAt(0) }}</span>
+        <span class="workspace-copy">
+          <strong>{{ user.fullName }}</strong>
+          <small>{{ user.role }} workspace</small>
+        </span>
+        <mat-icon aria-hidden="true">verified</mat-icon>
+      </div>
+    }
+
+    <nav class="primary-nav" aria-label="Workspace navigation">
+      <div class="nav-label">Navigation</div>
+      <mat-nav-list>
+        @for (link of navLinks(); track link.path) {
+          <a mat-list-item [routerLink]="link.path" routerLinkActive="active-link">
+            <span class="nav-icon" matListItemIcon>
+              <mat-icon>{{ link.icon }}</mat-icon>
+            </span>
+            <span matListItemTitle>{{ link.label }}</span>
+            <mat-icon class="nav-arrow" aria-hidden="true">chevron_right</mat-icon>
+          </a>
+        }
+      </mat-nav-list>
+    </nav>
+
+    <div class="network-illustration" aria-hidden="true">
+      <img src="/assets/navigation/route-network.png" alt="" />
+      <div class="network-illustration__overlay">
+        <span class="network-status"><i></i> Live network</span>
+        <strong>Routing in real time</strong>
+        <small>Trips and drivers stay synchronized.</small>
+      </div>
+    </div>
 
     <div class="sidenav-footer">
       <div class="system-state">
         <span class="system-state__signal" aria-hidden="true"></span>
         <span>
-          <strong>System operational</strong>
-          <small>All services available</small>
+          <strong>All systems operational</strong>
+          <small>Services are running normally</small>
         </span>
       </div>
     </div>
@@ -32,10 +57,18 @@
   <mat-sidenav-content>
     <mat-toolbar class="layout-toolbar">
       <div class="toolbar-context">
-        <span class="toolbar-context__label">Dispatch workspace</span>
-        <span class="toolbar-context__date">Live operations</span>
+        <span class="toolbar-context__icon" aria-hidden="true"><mat-icon>route</mat-icon></span>
+        <span>
+          <strong>Dispatch workspace</strong>
+          <small><i></i> Live operations</small>
+        </span>
       </div>
       <span class="spacer"></span>
+
+      <div class="toolbar-status" aria-label="Platform status">
+        <mat-icon aria-hidden="true">cloud_done</mat-icon>
+        <span>Connected</span>
+      </div>
 
       @if (currentUser(); as user) {
         <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-trigger" aria-label="Open account menu">
@@ -46,8 +79,18 @@
           </span>
           <mat-icon>expand_more</mat-icon>
         </button>
-        <mat-menu #userMenu="matMenu">
-          <div class="menu-role-label">Signed in as {{ user.role }}</div>
+        <mat-menu #userMenu="matMenu" class="account-menu">
+          <div class="menu-profile">
+            <span class="menu-avatar" aria-hidden="true">{{ user.fullName.charAt(0) }}</span>
+            <span>
+              <strong>{{ user.fullName }}</strong>
+              <small>{{ user.email }}</small>
+            </span>
+          </div>
+          <div class="menu-role-label">
+            <mat-icon aria-hidden="true">shield</mat-icon>
+            {{ user.role }} access
+          </div>
           <button mat-menu-item (click)="logout()">
             <mat-icon>logout</mat-icon>
             <span>Log out</span>
