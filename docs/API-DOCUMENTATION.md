@@ -416,6 +416,34 @@ An out-of-range `radiusKm` returns `400 Bad Request`.
 
 ---
 
+## Geo
+
+### `GET /api/geo/geocode`
+**Auth**: any authenticated user
+
+Forward-geocodes a typed address via a Nominatim-compatible provider
+(default: OpenStreetMap's public instance, configurable with
+`GEOCODING_BASE_URL`). Results are cached server-side.
+
+Query params: `q` — the address text, minimum 3 characters.
+
+Response `200 OK`:
+```json
+[
+  {
+    "displayName": "Ferry Building, 1, The Embarcadero, San Francisco, California, USA",
+    "lat": 37.7955,
+    "lng": -122.3937
+  }
+]
+```
+Up to 5 matches, best first; an empty array when nothing matches.
+
+Errors: `400` if `q` is shorter than 3 characters; `500` if the upstream
+geocoding provider is unreachable.
+
+---
+
 ## Riders
 
 ### `GET /api/riders/me`

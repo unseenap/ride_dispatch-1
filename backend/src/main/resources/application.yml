@@ -48,6 +48,9 @@ dispatchhub:
     # (see SurgePricingService). Set them equal to disable surge.
     surge-multiplier: 1.0
     max-surge-multiplier: ${MAX_SURGE_MULTIPLIER:2.5}
+  geocoding:
+    # Any Nominatim-compatible endpoint works (self-hosted or commercial).
+    base-url: ${GEOCODING_BASE_URL:https://nominatim.openstreetmap.org}
   rate-limit:
     enabled: ${RATE_LIMIT_ENABLED:true}
     # Per-IP token bucket on /api/auth/**: burst up to `capacity` requests,
