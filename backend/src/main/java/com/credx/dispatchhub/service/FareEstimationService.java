@@ -18,28 +18,36 @@ public class FareEstimationService {
     private static final double ASSUMED_AVERAGE_SPEED_KMH = 30.0;
 
     private final FareProperties fareProperties;
+    private final SurgePricingService surgePricingService;
 
     public FareEstimateResponse estimate(double pickupLat, double pickupLng, double dropoffLat, double dropoffLng) {
         double distanceKm = GeoUtils.distanceKm(pickupLat, pickupLng, dropoffLat, dropoffLng);
         double durationMinutes = (distanceKm / ASSUMED_AVERAGE_SPEED_KMH) * 60.0;
 
-        BigDecimal fare = calculateFare(distanceKm, durationMinutes);
+        BigDecimal surgeMultiplier = surgePricingService.currentMultiplier();
+        BigDecimal fare = calculateFare(distanceKm, durationMinutes, surgeMultiplier);
 
         return FareEstimateResponse.builder()
                 .estimatedFare(fare)
                 .distanceKm(round(distanceKm))
                 .estimatedDurationMinutes(round(durationMinutes))
+                .surgeMultiplier(surgeMultiplier)
                 .build();
     }
 
+    /** Fare at the current demand-based surge multiplier. */
     public BigDecimal calculateFare(double distanceKm, double durationMinutes) {
+        return calculateFare(distanceKm, durationMinutes, surgePricingService.currentMultiplier());
+    }
+
+    public BigDecimal calculateFare(double distanceKm, double durationMinutes, BigDecimal surgeMultiplier) {
         BigDecimal distanceCost = fareProperties.getPerKmRate().multiply(BigDecimal.valueOf(distanceKm));
         BigDecimal timeCost = fareProperties.getPerMinuteRate().multiply(BigDecimal.valueOf(durationMinutes));
 
         BigDecimal total = fareProperties.getBaseFare()
                 .add(distanceCost)
                 .add(timeCost)
-                .multiply(fareProperties.getSurgeMultiplier());
+                .multiply(surgeMultiplier);
 
         return total.setScale(2, RoundingMode.HALF_UP);
     }

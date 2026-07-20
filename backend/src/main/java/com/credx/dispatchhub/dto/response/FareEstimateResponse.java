@@ -15,4 +15,5 @@ public class FareEstimateResponse {
     private BigDecimal estimatedFare;
     private double distanceKm;
     private double estimatedDurationMinutes;
+    private BigDecimal surgeMultiplier;
 }

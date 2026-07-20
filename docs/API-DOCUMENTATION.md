@@ -161,8 +161,15 @@ Request:
 
 Response `200 OK`:
 ```json
-{ "estimatedFare": 18.40, "distanceKm": 13.2, "estimatedDurationMinutes": 26.4 }
+{ "estimatedFare": 18.40, "distanceKm": 13.2, "estimatedDurationMinutes": 26.4, "surgeMultiplier": 1.0 }
 ```
+
+`surgeMultiplier` is demand-based: it rises linearly from the base `1.0`
+toward `MAX_SURGE_MULTIPLIER` (default `2.5`) as waiting `REQUESTED` trips
+outnumber `AVAILABLE` drivers, and is already applied to `estimatedFare`.
+Trip requests compute their own fare at request time, so the multiplier a
+rider was shown can differ slightly from the one applied if demand shifts
+between preview and request.
 
 ### `GET /api/trips`
 **Auth**: `ADMIN`

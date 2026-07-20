@@ -17,4 +17,5 @@ public class FareProperties {
     private BigDecimal perKmRate;
     private BigDecimal perMinuteRate;
     private BigDecimal surgeMultiplier;
+    private BigDecimal maxSurgeMultiplier;
 }

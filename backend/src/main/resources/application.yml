@@ -43,7 +43,11 @@ dispatchhub:
     base-fare: 2.50
     per-km-rate: 1.20
     per-minute-rate: 0.25
+    # surge-multiplier is the floor; the effective multiplier scales up to
+    # max-surge-multiplier as waiting trips outnumber available drivers
+    # (see SurgePricingService). Set them equal to disable surge.
     surge-multiplier: 1.0
+    max-surge-multiplier: ${MAX_SURGE_MULTIPLIER:2.5}
   rate-limit:
     enabled: ${RATE_LIMIT_ENABLED:true}
     # Per-IP token bucket on /api/auth/**: burst up to `capacity` requests,

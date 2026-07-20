@@ -43,6 +43,8 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
     @Query("select t from Trip t where t.id = :id")
     Optional<Trip> findByIdForUpdate(@Param("id") Long id);
 
+    long countByStatus(TripStatus status);
+
     long countByStatusAndRequestedAtBetween(TripStatus status, Instant from, Instant to);
 
     long countByRequestedAtBetween(Instant from, Instant to);

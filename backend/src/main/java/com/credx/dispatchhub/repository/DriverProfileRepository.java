@@ -30,6 +30,8 @@ public interface DriverProfileRepository extends JpaRepository<DriverProfile, Lo
 
     List<DriverProfile> findByStatus(DriverStatus status);
 
+    long countByStatus(DriverStatus status);
+
     @Query("select d from DriverProfile d join fetch d.user where d.id = :id")
     Optional<DriverProfile> findByIdWithUser(@Param("id") Long id);
 
