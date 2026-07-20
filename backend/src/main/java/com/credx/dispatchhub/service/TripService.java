@@ -99,7 +99,17 @@ public class TripService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TripResponse> listTripsForDriver(Long driverProfileId, Pageable pageable) {
+    public Page<TripResponse> listTripsForDriver(
+            Long driverProfileId, Long requesterUserId, UserRole requesterRole, Pageable pageable) {
+        if (requesterRole == UserRole.DRIVER) {
+            DriverProfile requesterDriver = driverProfileRepository.findByUserId(requesterUserId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Driver profile not found"));
+
+            if (!requesterDriver.getId().equals(driverProfileId)) {
+                throw new AccessDeniedException("You do not have permission to view this driver's trips");
+            }
+        }
+
         return tripRepository.findByDriverId(driverProfileId, pageable).map(this::toResponse);
     }
 

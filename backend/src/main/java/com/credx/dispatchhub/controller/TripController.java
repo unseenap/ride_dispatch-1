@@ -65,7 +65,8 @@ public class TripController {
     public ResponseEntity<PageResponse<TripResponse>> getDriverTrips(
             @PathVariable Long driverProfileId,
             @PageableDefault(size = 20, sort = "requestedAt") Pageable pageable) {
-        return ResponseEntity.ok(PageResponse.of(tripService.listTripsForDriver(driverProfileId, pageable)));
+        return ResponseEntity.ok(PageResponse.of(
+                tripService.listTripsForDriver(driverProfileId, currentUser.id(), currentUser.role(), pageable)));
     }
 
     @GetMapping("/{id}")
