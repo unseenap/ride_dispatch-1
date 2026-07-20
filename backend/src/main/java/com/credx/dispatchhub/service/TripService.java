@@ -256,6 +256,40 @@ public class TripService {
     }
 
     /**
+     * Admin recovery for stuck trips: force-cancels a trip in any non-terminal
+     * state (e.g. a driver's app died mid-trip), bypassing the caller-ownership
+     * rules of {@link #cancelTrip}. Frees the assigned driver if they are still
+     * marked ON_TRIP.
+     */
+    @Transactional
+    public TripResponse forceCancelTrip(Long tripId, String reason) {
+        Trip trip = tripRepository.findByIdForUpdate(tripId)
+                .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + tripId));
+
+        if (trip.getStatus() == TripStatus.COMPLETED || trip.getStatus() == TripStatus.CANCELLED) {
+            throw new InvalidTripStateException("Trip is already " + trip.getStatus());
+        }
+
+        String note = (reason != null && !reason.isBlank()) ? reason : "Force-cancelled by admin";
+        trip.setStatus(TripStatus.CANCELLED);
+        trip.setCancelledAt(Instant.now());
+        trip.setCancellationReason(note);
+        trip.addStatusHistory(TripStatusHistory.builder()
+                .status(TripStatus.CANCELLED)
+                .changedAt(Instant.now())
+                .note(note)
+                .build());
+
+        if (trip.getDriver() != null && trip.getDriver().getStatus() == DriverStatus.ON_TRIP) {
+            DriverProfile driver = trip.getDriver();
+            driver.setStatus(DriverStatus.AVAILABLE);
+            driverProfileRepository.save(driver);
+        }
+
+        return toResponse(tripRepository.save(trip));
+    }
+
+    /**
      * @deprecated superseded by {@link #listTripsForRider(Long, TripStatus, Pageable)}
      * which supports pagination and status filtering. Left in place because the
      * admin "rider trip history" export script still calls it directly.

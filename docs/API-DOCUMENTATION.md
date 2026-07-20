@@ -415,9 +415,19 @@ last 30 days).
 ### `POST /api/admin/trips/{id}/force-cancel`
 **Auth**: `ADMIN`
 
-**Current status**: not implemented. Returns `501 Not Implemented` — see
-Missing Features in the root README (recovery endpoint for trips stuck
-mid-lifecycle).
+Recovery endpoint for trips stuck mid-lifecycle (e.g. a driver's app
+crashed). Force-cancels a trip in any non-terminal state, bypassing the
+normal caller-ownership rules, and returns the assigned driver (if any)
+to `AVAILABLE`.
+
+Request (optional body):
+```json
+{ "reason": "Driver unreachable for 30 minutes" }
+```
+
+Response `200 OK`: updated `TripResponse` with `status: "CANCELLED"`.
+Returns `409` if the trip is already `COMPLETED` or `CANCELLED`, `404` if it
+doesn't exist.
 
 ---
 
