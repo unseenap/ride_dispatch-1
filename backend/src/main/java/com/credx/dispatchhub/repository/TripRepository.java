@@ -68,4 +68,23 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
             group by t.driver.id, t.driver.user.fullName
             """)
     List<DriverTripAggregate> aggregateCompletedTripsPerDriver(@Param("from") Instant from, @Param("to") Instant to);
+
+    interface DriverEarningsAggregate {
+        long getCompletedTrips();
+        BigDecimal getTotalEarnings();
+        Double getTotalDistanceKm();
+    }
+
+    @Query("""
+            select count(t) as completedTrips,
+                   coalesce(sum(coalesce(t.finalFare, t.fareEstimate)), 0) as totalEarnings,
+                   coalesce(sum(t.distanceKm), 0) as totalDistanceKm
+            from Trip t
+            where t.status = com.credx.dispatchhub.enums.TripStatus.COMPLETED
+              and t.driver.id = :driverId
+              and t.completedAt between :from and :to
+            """)
+    DriverEarningsAggregate aggregateEarningsForDriver(@Param("driverId") Long driverId,
+                                                       @Param("from") Instant from,
+                                                       @Param("to") Instant to);
 }

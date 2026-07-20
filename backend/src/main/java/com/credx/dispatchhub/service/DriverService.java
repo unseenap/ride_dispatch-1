@@ -3,11 +3,13 @@ package com.credx.dispatchhub.service;
 import com.credx.dispatchhub.dto.request.DriverAvailabilityRequest;
 import com.credx.dispatchhub.dto.request.DriverLocationUpdateRequest;
 import com.credx.dispatchhub.dto.request.DriverProfileUpdateRequest;
+import com.credx.dispatchhub.dto.response.DriverEarningsResponse;
 import com.credx.dispatchhub.dto.response.DriverProfileResponse;
 import com.credx.dispatchhub.entity.DriverProfile;
 import com.credx.dispatchhub.enums.DriverStatus;
 import com.credx.dispatchhub.exception.ResourceNotFoundException;
 import com.credx.dispatchhub.repository.DriverProfileRepository;
+import com.credx.dispatchhub.repository.TripRepository;
 import com.credx.dispatchhub.util.GeoUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +32,7 @@ public class DriverService {
     private static final int MAX_NEARBY_RESULTS = 20;
 
     private final DriverProfileRepository driverProfileRepository;
+    private final TripRepository tripRepository;
 
     @Transactional(readOnly = true)
     public Page<DriverProfileResponse> listDrivers(DriverStatus status, Pageable pageable) {
@@ -113,6 +119,41 @@ public class DriverService {
                 .limit(MAX_NEARBY_RESULTS)
                 .map(e -> toResponse(e.getKey()))
                 .toList();
+    }
+
+    /**
+     * Earnings summary for the driver's completed trips in [from, to],
+     * aggregated in the database. Earnings use the final fare when the driver
+     * recorded one, falling back to the estimate otherwise (same rule as the
+     * admin revenue analytics).
+     */
+    @Transactional(readOnly = true)
+    public DriverEarningsResponse getEarningsForUser(Long userId, Instant from, Instant to) {
+        DriverProfile driver = driverProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Driver profile not found for this user"));
+
+        if (from.isAfter(to)) {
+            throw new IllegalArgumentException("'from' must be before 'to'");
+        }
+
+        TripRepository.DriverEarningsAggregate aggregate =
+                tripRepository.aggregateEarningsForDriver(driver.getId(), from, to);
+
+        BigDecimal totalEarnings = aggregate.getTotalEarnings();
+        long completedTrips = aggregate.getCompletedTrips();
+        BigDecimal averageFare = completedTrips == 0
+                ? BigDecimal.ZERO
+                : totalEarnings.divide(BigDecimal.valueOf(completedTrips), 2, RoundingMode.HALF_UP);
+
+        return DriverEarningsResponse.builder()
+                .driverId(driver.getId())
+                .from(from)
+                .to(to)
+                .completedTrips(completedTrips)
+                .totalEarnings(totalEarnings)
+                .averageFare(averageFare)
+                .totalDistanceKm(aggregate.getTotalDistanceKm())
+                .build();
     }
 
     private DriverProfileResponse toResponse(DriverProfile driver) {

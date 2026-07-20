@@ -374,6 +374,29 @@ Request:
 { "vehicleMake": "Toyota", "vehicleModel": "Camry", "vehicleColor": "Silver", "licensePlate": "7ABC123" }
 ```
 
+### `GET /api/drivers/me/earnings`
+**Auth**: `DRIVER`
+
+Earnings summary for the authenticated driver's completed trips. Query
+params `from` and `to` are optional ISO-8601 instants; the default window
+is the last 30 days. Earnings use `finalFare` when recorded, falling back
+to `fareEstimate` (the same rule as admin revenue analytics).
+
+Response `200 OK`:
+```json
+{
+  "driverId": 3,
+  "from": "2026-06-20T10:00:00Z",
+  "to": "2026-07-20T10:00:00Z",
+  "completedTrips": 12,
+  "totalEarnings": 214.80,
+  "averageFare": 17.90,
+  "totalDistanceKm": 96.4
+}
+```
+
+Errors: `400` if `from` is after `to`, `404` if the caller has no driver profile.
+
 ### `GET /api/drivers/nearby`
 **Auth**: any authenticated user
 
