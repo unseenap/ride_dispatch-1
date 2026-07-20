@@ -14,7 +14,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: ${SHOW_SQL:true}
+    show-sql: ${SHOW_SQL:false}
     properties:
       hibernate:
         format_sql: true
@@ -29,7 +29,10 @@ spring:
 
 dispatchhub:
   jwt:
-    secret: ${JWT_SECRET:dGhpc2lzYXRlc3RzZWNyZXRrZXlmb3JkaXNwYXRjaGh1YmRldmVsb3BtZW50b25seQ==}
+    # No fallback on purpose: startup fails fast if JWT_SECRET is not set,
+    # rather than silently signing tokens with a publicly-known dev key.
+    # For local development use the dev profile below.
+    secret: ${JWT_SECRET}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
     issuer: ${JWT_ISSUER:dispatchhub-api}
   cors:
@@ -43,11 +46,29 @@ dispatchhub:
 logging:
   level:
     root: INFO
-    com.credx.dispatchhub: DEBUG
-    org.hibernate.SQL: DEBUG
+    com.credx.dispatchhub: ${APP_LOG_LEVEL:INFO}
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info
+
+---
+# Local development only: activate with SPRING_PROFILES_ACTIVE=dev or
+# `mvn spring-boot:run -Dspring-boot.run.profiles=dev`.
+spring:
+  config:
+    activate:
+      on-profile: dev
+  jpa:
+    show-sql: ${SHOW_SQL:true}
+
+dispatchhub:
+  jwt:
+    secret: ${JWT_SECRET:dGhpc2lzYXRlc3RzZWNyZXRrZXlmb3JkaXNwYXRjaGh1YmRldmVsb3BtZW50b25seQ==}
+
+logging:
+  level:
+    com.credx.dispatchhub: ${APP_LOG_LEVEL:DEBUG}
+    org.hibernate.SQL: DEBUG

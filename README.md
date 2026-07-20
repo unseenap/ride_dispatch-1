@@ -243,16 +243,24 @@ cp backend/application-example.env backend/.env
 | `JWT_ISSUER` | `iss` claim value | `dispatchhub-api` |
 | `CORS_ALLOWED_ORIGINS` | Comma-separated allowed origins | `http://localhost:4200` |
 
-`application.yml` reads all of these via `${VAR:default}` placeholders, so
-the app runs with sane defaults even if you don't set anything explicitly
-for local dev.
+`application.yml` reads these via `${VAR}` placeholders. Database, CORS, and
+expiry settings have local-dev defaults, but **`JWT_SECRET` has no default in
+the base configuration** — the app fails fast at startup if it is missing,
+so a deployment can never accidentally run with a publicly-known signing key.
+For local development, activate the `dev` profile (see below), which supplies
+a dev-only secret and verbose SQL/DEBUG logging.
 
 ### Backend
 
+For local development (dev-only JWT secret + SQL/DEBUG logging enabled):
+
 ```bash
 cd backend
-mvn spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
+
+For a production-like run, set `JWT_SECRET` (e.g. `openssl rand -base64 64`)
+as a real environment variable and start without the dev profile.
 
 The API starts on `http://localhost:8080`. Health check:
 `GET http://localhost:8080/actuator/health`.
