@@ -12,6 +12,7 @@ import com.credx.dispatchhub.entity.TripStatusHistory;
 import com.credx.dispatchhub.entity.User;
 import com.credx.dispatchhub.enums.DriverStatus;
 import com.credx.dispatchhub.enums.TripStatus;
+import com.credx.dispatchhub.enums.UserRole;
 import com.credx.dispatchhub.exception.DriverUnavailableException;
 import com.credx.dispatchhub.exception.InvalidTripStateException;
 import com.credx.dispatchhub.exception.ResourceNotFoundException;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.Instant;
 import java.util.List;
@@ -97,38 +99,48 @@ public class TripService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TripResponse> listTripsForDriver(Long driverProfileId, Pageable pageable) {
+    public Page<TripResponse> listTripsForDriver(
+            Long driverProfileId, Long requesterUserId, UserRole requesterRole, Pageable pageable) {
+        if (requesterRole == UserRole.DRIVER) {
+            DriverProfile requesterDriver = driverProfileRepository.findByUserId(requesterUserId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Driver profile not found"));
+
+            if (!requesterDriver.getId().equals(driverProfileId)) {
+                throw new AccessDeniedException("You do not have permission to view this driver's trips");
+            }
+        }
+
         return tripRepository.findByDriverId(driverProfileId, pageable).map(this::toResponse);
     }
 
-    /**
-     * Returns a single trip by id. Used by both the rider-facing trip detail
-     * page and the admin dashboard, so it does NOT restrict by requester -
-     * callers (controller layer) are expected to apply their own authorization
-     * before exposing this to a non-admin caller.
-     */
     @Transactional(readOnly = true)
-    public TripResponse getTripById(Long tripId) {
+    public TripResponse getTripById(Long tripId, Long requesterUserId, UserRole requesterRole) {
         Trip trip = tripRepository.findByIdWithRiderAndDriver(tripId)
                 .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + tripId));
+
+        boolean ownsTripAsRider = trip.getRider().getId().equals(requesterUserId);
+        boolean ownsTripAsDriver = trip.getDriver() != null
+                && trip.getDriver().getUser().getId().equals(requesterUserId);
+
+        if (requesterRole != UserRole.ADMIN && !ownsTripAsRider && !ownsTripAsDriver) {
+            throw new AccessDeniedException("You do not have permission to view this trip");
+        }
+
         return toResponse(trip);
     }
 
     @Transactional
     public TripResponse acceptTrip(Long tripId, Long driverUserId) {
-        Trip trip = tripRepository.findById(tripId)
+        Trip trip = tripRepository.findByIdForUpdate(tripId)
                 .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + tripId));
 
         if (trip.getStatus() != TripStatus.REQUESTED) {
             throw new InvalidTripStateException("Trip is no longer available to accept");
         }
 
-        DriverProfile driver = driverProfileRepository.findByUserId(driverUserId)
+        DriverProfile driver = driverProfileRepository.findByUserIdForUpdate(driverUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Driver profile not found"));
 
-        // Check-then-act on driver availability: two concurrent accept requests
-        // for two different trips can both read AVAILABLE here before either
-        // write lands, so both trips end up assigned to the same driver.
         if (driver.getStatus() != DriverStatus.AVAILABLE) {
             throw new DriverUnavailableException("Driver is not currently available");
         }
@@ -211,17 +223,20 @@ public class TripService {
         return toResponse(tripRepository.save(trip));
     }
 
-    /**
-     * Cancels a trip. Riders can cancel their own trip; drivers can cancel a
-     * trip assigned to them. NOTE: this only checks that the trip exists and
-     * is in a cancellable state - it does not verify the caller is the rider
-     * who requested it before allowing the cancellation to proceed for the
-     * rider-initiated path.
-     */
     @Transactional
-    public TripResponse cancelTrip(Long tripId, Long requesterUserId, CancelTripRequest request) {
+    public TripResponse cancelTrip(Long tripId, Long requesterUserId, UserRole requesterRole, CancelTripRequest request) {
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + tripId));
+
+        boolean ownsTripAsRider = requesterRole == UserRole.RIDER
+                && trip.getRider().getId().equals(requesterUserId);
+        boolean ownsTripAsDriver = requesterRole == UserRole.DRIVER
+                && trip.getDriver() != null
+                && trip.getDriver().getUser().getId().equals(requesterUserId);
+
+        if (requesterRole != UserRole.ADMIN && !ownsTripAsRider && !ownsTripAsDriver) {
+            throw new AccessDeniedException("You do not have permission to cancel this trip");
+        }
 
         if (trip.getStatus() == TripStatus.COMPLETED || trip.getStatus() == TripStatus.CANCELLED) {
             throw new InvalidTripStateException("Trip is already " + trip.getStatus());

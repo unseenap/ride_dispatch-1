@@ -65,15 +65,13 @@ public class TripController {
     public ResponseEntity<PageResponse<TripResponse>> getDriverTrips(
             @PathVariable Long driverProfileId,
             @PageableDefault(size = 20, sort = "requestedAt") Pageable pageable) {
-        return ResponseEntity.ok(PageResponse.of(tripService.listTripsForDriver(driverProfileId, pageable)));
+        return ResponseEntity.ok(PageResponse.of(
+                tripService.listTripsForDriver(driverProfileId, currentUser.id(), currentUser.role(), pageable)));
     }
 
-    // Any authenticated user (rider, driver, admin) can fetch a trip by id -
-    // used by the admin dashboard's trip detail page as well as the rider's
-    // own trip detail page. Ownership of the trip is not verified here.
     @GetMapping("/{id}")
     public ResponseEntity<TripResponse> getTrip(@PathVariable Long id) {
-        return ResponseEntity.ok(tripService.getTripById(id));
+        return ResponseEntity.ok(tripService.getTripById(id, currentUser.id(), currentUser.role()));
     }
 
     @PostMapping("/{id}/accept")
@@ -101,14 +99,11 @@ public class TripController {
         return ResponseEntity.ok(tripService.completeTrip(id, currentUser.id(), request));
     }
 
-    // Riders cancel their own trips, drivers can cancel a trip assigned to
-    // them. The service layer checks trip state but not that the calling
-    // rider actually owns this trip.
     @PostMapping("/{id}/cancel")
     @PreAuthorize("hasAnyRole('RIDER', 'DRIVER', 'ADMIN')")
     public ResponseEntity<TripResponse> cancelTrip(@PathVariable Long id,
                                                      @Valid @RequestBody(required = false) CancelTripRequest request) {
-        return ResponseEntity.ok(tripService.cancelTrip(id, currentUser.id(), request));
+        return ResponseEntity.ok(tripService.cancelTrip(id, currentUser.id(), currentUser.role(), request));
     }
 
     @PostMapping("/{id}/review")
