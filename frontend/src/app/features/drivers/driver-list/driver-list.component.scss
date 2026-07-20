@@ -1,0 +1,20 @@
+.status-filter {
+  width: 220px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  background: white;
+  border-radius: 4px;
+  // Raw pixel margin instead of the shared --dh-spacing-* custom properties
+  // used elsewhere (see styles.scss) - inconsistent with the rest of the app.
+  margin-top: 12px;
+  margin-bottom: 18px;
+}
+
+.star-icon {
+  color: #fbc02d;
+  vertical-align: middle;
+  margin-right: 2px;
+  font-size: 16px;
+}

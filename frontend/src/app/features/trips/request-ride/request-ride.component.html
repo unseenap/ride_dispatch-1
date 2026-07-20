@@ -1,0 +1,51 @@
+<div class="dh-page">
+  <div class="dh-page-header">
+    <h1>Request a ride</h1>
+  </div>
+
+  <div class="request-grid">
+    <mat-card class="form-card">
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="dh-full-width">
+          <mat-label>Pickup address</mat-label>
+          <input matInput formControlName="pickupAddress" placeholder="1 Market St, San Francisco, CA" />
+          <mat-icon matPrefix>my_location</mat-icon>
+          @if (form.controls.pickupAddress.hasError('required') && form.controls.pickupAddress.touched) {
+            <mat-error>Pickup address is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="dh-full-width">
+          <mat-label>Dropoff address</mat-label>
+          <input matInput formControlName="dropoffAddress" placeholder="Ferry Building, San Francisco, CA" />
+          <mat-icon matPrefix>flag</mat-icon>
+        </mat-form-field>
+
+        @if (submitError()) {
+          <p class="error-text">{{ submitError() }}</p>
+        }
+
+        <button mat-flat-button color="primary" type="submit" class="dh-full-width submit-btn" [disabled]="submitting()">
+          @if (submitting()) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            <span>Request ride</span>
+          }
+        </button>
+      </form>
+    </mat-card>
+
+    <mat-card class="fare-card">
+      <h2>Fare estimate</h2>
+      @if (fareEstimate(); as estimate) {
+        <div class="fare-amount">${{ estimate.estimatedFare.toFixed(2) }}</div>
+        <p class="fare-meta">{{ estimate.distanceKm.toFixed(1) }} km &middot; ~{{ estimate.estimatedDurationMinutes.toFixed(0) }} min</p>
+      } @else {
+        <div class="dh-loading-state">
+          <mat-spinner diameter="28"></mat-spinner>
+        </div>
+      }
+      <p class="fare-disclaimer">Final fare may vary based on route, traffic, and wait time.</p>
+    </mat-card>
+  </div>
+</div>

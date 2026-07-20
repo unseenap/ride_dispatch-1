@@ -1,0 +1,32 @@
+<div class="dh-page">
+  <div class="dh-page-header">
+    <h1>Welcome back{{ currentUser() ? ', ' + currentUser()!.fullName : '' }}</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="dh-loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading dashboard...</p>
+    </div>
+  } @else if (error()) {
+    <mat-card class="dh-empty-state">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+    </mat-card>
+  } @else if (stats(); as s) {
+    <div class="dh-card-grid">
+      <app-stat-card label="Trips today" [value]="s.totalTripsToday" icon="local_taxi" iconColor="#1e88e5"></app-stat-card>
+      <app-stat-card label="Active drivers" [value]="s.activeDrivers" icon="badge" iconColor="#43a047"></app-stat-card>
+      <app-stat-card label="Completed today" [value]="s.completedTripsToday" icon="check_circle" iconColor="#43a047"></app-stat-card>
+      <app-stat-card label="In progress" [value]="s.tripsInProgress" icon="autorenew" iconColor="#fb8c00"></app-stat-card>
+      <app-stat-card label="Cancelled today" [value]="s.cancelledTripsToday" icon="cancel" iconColor="#e53935"></app-stat-card>
+      <app-stat-card label="Registered drivers" [value]="s.totalRegisteredDrivers" icon="groups" iconColor="#8e24aa"></app-stat-card>
+      <app-stat-card label="Registered riders" [value]="s.totalRegisteredRiders" icon="person" iconColor="#8e24aa"></app-stat-card>
+    </div>
+  } @else {
+    <mat-card class="dh-empty-state">
+      <mat-icon>dashboard</mat-icon>
+      <p>Use the sidebar to request a ride or view your trip history.</p>
+    </mat-card>
+  }
+</div>

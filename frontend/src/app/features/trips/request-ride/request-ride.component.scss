@@ -1,0 +1,44 @@
+.request-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-card, .fare-card {
+  padding: 20px;
+}
+
+.submit-btn {
+  height: 44px;
+  margin-top: 8px;
+}
+
+.error-text {
+  color: #c62828;
+  font-size: 0.875rem;
+}
+
+.fare-card h2 {
+  font-size: 1rem;
+  margin: 0 0 12px;
+}
+
+.fare-amount {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1e3a5f;
+}
+
+.fare-meta {
+  color: rgba(0, 0, 0, 0.6);
+  margin: 4px 0 16px;
+}
+
+.fare-disclaimer {
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.5);
+}
