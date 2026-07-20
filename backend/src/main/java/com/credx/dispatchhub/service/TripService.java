@@ -37,6 +37,14 @@ public class TripService {
     private final DriverProfileRepository driverProfileRepository;
     private final UserRepository userRepository;
     private final FareEstimationService fareEstimationService;
+    private final TripEventPublisher tripEventPublisher;
+
+    /** Builds the response and queues an SSE update for the trip's subscribers. */
+    private TripResponse respondAndPublish(Trip trip) {
+        TripResponse response = toResponse(trip);
+        tripEventPublisher.publish(response);
+        return response;
+    }
 
     @Transactional
     public TripResponse requestTrip(Long riderId, TripRequest request) {
@@ -151,7 +159,7 @@ public class TripService {
                 .changedAt(Instant.now())
                 .build());
 
-        return toResponse(tripRepository.save(trip));
+        return respondAndPublish(tripRepository.save(trip));
     }
 
     @Transactional
@@ -169,7 +177,7 @@ public class TripService {
                 .changedAt(Instant.now())
                 .build());
 
-        return toResponse(tripRepository.save(trip));
+        return respondAndPublish(tripRepository.save(trip));
     }
 
     @Transactional
@@ -187,7 +195,7 @@ public class TripService {
                 .changedAt(Instant.now())
                 .build());
 
-        return toResponse(tripRepository.save(trip));
+        return respondAndPublish(tripRepository.save(trip));
     }
 
     @Transactional
@@ -215,7 +223,7 @@ public class TripService {
         driver.setTotalTrips(driver.getTotalTrips() + 1);
         driverProfileRepository.save(driver);
 
-        return toResponse(tripRepository.save(trip));
+        return respondAndPublish(tripRepository.save(trip));
     }
 
     @Transactional
@@ -252,7 +260,7 @@ public class TripService {
             driverProfileRepository.save(driver);
         }
 
-        return toResponse(tripRepository.save(trip));
+        return respondAndPublish(tripRepository.save(trip));
     }
 
     /**
@@ -286,7 +294,7 @@ public class TripService {
             driverProfileRepository.save(driver);
         }
 
-        return toResponse(tripRepository.save(trip));
+        return respondAndPublish(tripRepository.save(trip));
     }
 
     /**

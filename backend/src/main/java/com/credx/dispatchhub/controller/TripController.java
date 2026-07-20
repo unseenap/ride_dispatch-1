@@ -12,6 +12,7 @@ import com.credx.dispatchhub.dto.response.TripResponse;
 import com.credx.dispatchhub.enums.TripStatus;
 import com.credx.dispatchhub.security.CurrentUser;
 import com.credx.dispatchhub.service.ReviewService;
+import com.credx.dispatchhub.service.TripEventPublisher;
 import com.credx.dispatchhub.service.TripService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/api/trips")
@@ -29,6 +31,7 @@ public class TripController {
 
     private final TripService tripService;
     private final ReviewService reviewService;
+    private final TripEventPublisher tripEventPublisher;
     private final CurrentUser currentUser;
 
     @PostMapping
@@ -72,6 +75,18 @@ public class TripController {
     @GetMapping("/{id}")
     public ResponseEntity<TripResponse> getTrip(@PathVariable Long id) {
         return ResponseEntity.ok(tripService.getTripById(id, currentUser.id(), currentUser.role()));
+    }
+
+    /**
+     * Server-sent-events stream of status updates for one trip. The current
+     * snapshot is sent immediately, then one event per state change; the
+     * stream closes when the trip reaches COMPLETED or CANCELLED. Same
+     * access rule as GET /api/trips/{id}.
+     */
+    @GetMapping("/{id}/events")
+    public SseEmitter streamTripEvents(@PathVariable Long id) {
+        TripResponse snapshot = tripService.getTripById(id, currentUser.id(), currentUser.role());
+        return tripEventPublisher.subscribe(id, snapshot);
     }
 
     @PostMapping("/{id}/accept")

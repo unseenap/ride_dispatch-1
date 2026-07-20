@@ -244,6 +244,26 @@ Response `200 OK`:
 
 Errors: `404` if the trip doesn't exist.
 
+### `GET /api/trips/{id}/events`
+**Auth**: trip's rider, assigned driver, or `ADMIN` (same rule as `GET /api/trips/{id}`)
+
+Server-sent-events (`text/event-stream`) stream of live status updates for
+one trip — the push-based alternative to polling `GET /api/trips/{id}`.
+The current `TripResponse` snapshot is sent immediately as the first
+event, then one `trip-update` event per state change. The stream closes
+automatically when the trip reaches `COMPLETED` or `CANCELLED` (or after a
+30-minute idle timeout — clients should reconnect if they still care).
+
+```
+event: trip-update
+data: { ...TripResponse JSON... }
+```
+
+Note for browser clients: the native `EventSource` API cannot send an
+`Authorization` header. Use a fetch-based SSE reader (e.g.
+`@microsoft/fetch-event-source`) that attaches the JWT like any other
+request.
+
 ### `POST /api/trips/{id}/accept`
 **Auth**: `DRIVER`
 
