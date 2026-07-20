@@ -1,0 +1,53 @@
+# One-command local startup: docker compose up --build
+#
+#   frontend  http://localhost:4200  (nginx serving the Angular bundle,
+#                                     proxying /api to the backend)
+#   backend   http://localhost:8080  (Spring Boot API)
+#   postgres  internal only          (not published on the host)
+#
+# This compose file is a local development convenience, so the backend runs
+# with the dev profile (dev JWT secret fallback, verbose logging). For a
+# production-like run, set SPRING_PROFILES_ACTIVE= (empty) and provide a real
+# JWT_SECRET, e.g.:  JWT_SECRET=$(openssl rand -base64 64) docker compose up
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: dispatchhub
+      POSTGRES_USER: dispatchhub
+      POSTGRES_PASSWORD: dispatchhub
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dispatchhub -d dispatchhub"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/dispatchhub
+      DB_USERNAME: dispatchhub
+      DB_PASSWORD: dispatchhub
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      # Falls back to the dev-profile signing key so `docker compose up` works
+      # with zero setup. Override JWT_SECRET for anything beyond local dev.
+      JWT_SECRET: ${JWT_SECRET:-dGhpc2lzYXRlc3RzZWNyZXRrZXlmb3JkaXNwYXRjaGh1YmRldmVsb3BtZW50b25seQ==}
+      CORS_ALLOWED_ORIGINS: http://localhost:4200
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "4200:80"
+
+volumes:
+  postgres-data:

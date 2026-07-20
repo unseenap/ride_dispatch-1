@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -87,7 +88,10 @@ public class Trip {
     @Column(name = "distance_km")
     private Double distanceKm;
 
+    // Batch-loaded rather than fetch-joined: a collection join fetch on the
+    // paginated trip queries would make Hibernate paginate in memory.
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @BatchSize(size = 50)
     @Builder.Default
     private List<TripStatusHistory> statusHistory = new ArrayList<>();
 

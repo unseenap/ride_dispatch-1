@@ -266,25 +266,29 @@ cp backend/application-example.env backend/.env
 
 Important environment variables:
 
-| Variable | Default |
-|---|---|
-| `DB_URL` | `jdbc:postgresql://localhost:5432/dispatchhub` |
-| `DB_USERNAME` | `dispatchhub` |
-| `DB_PASSWORD` | `dispatchhub` |
-| `JWT_EXPIRATION_MS` | `86400000` |
-| `JWT_ISSUER` | `dispatchhub-api` |
-| `CORS_ALLOWED_ORIGINS` | `http://localhost:4200` |
+`application.yml` reads these via `${VAR}` placeholders. Database, CORS, and
+expiry settings have local-dev defaults, but **`JWT_SECRET` has no default in
+the base configuration** — the app fails fast at startup if it is missing,
+so a deployment can never accidentally run with a publicly-known signing key.
+For local development, activate the `dev` profile (see below), which supplies
+a dev-only secret and verbose SQL/DEBUG logging.
 
 Use a strong environment-specific `JWT_SECRET` outside local development.
 
 ### 4. Start the backend
 
+For local development (dev-only JWT secret + SQL/DEBUG logging enabled):
+
 ```bash
 cd backend
-mvn spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-The API starts at `http://localhost:8080`.
+For a production-like run, set `JWT_SECRET` (e.g. `openssl rand -base64 64`)
+as a real environment variable and start without the dev profile.
+
+The API starts on `http://localhost:8080`. Health check:
+`GET http://localhost:8080/actuator/health`.
 
 Health check:
 
@@ -292,10 +296,13 @@ Health check:
 GET http://localhost:8080/actuator/health
 ```
 
-### 5. Start the frontend
+To run the tests (trip state machine integration tests; they use an
+in-memory H2 database, no Postgres needed):
+```bash
+mvn test
+```
 
-First ensure the TypeScript version is compatible with the installed Angular
-20 build tooling. Then install dependencies and start the development server:
+### Frontend
 
 ```bash
 cd frontend
@@ -385,6 +392,22 @@ Every change should be evaluated against the original hackathon criteria:
 
 ## Project story in one sentence
 
-**We stabilized the Angular component initialization flow and transformed a
-functional but fragmented dispatch application into a clear, responsive, and
-presentation-ready enterprise experience—without changing its business logic.**
+### Running with Docker (one command)
+
+```bash
+docker compose up --build
+```
+
+This starts PostgreSQL (internal only), the backend on
+`http://localhost:8080`, and the frontend on `http://localhost:4200`
+(nginx serves the production Angular bundle and proxies `/api` to the
+backend, so no CORS setup is needed). The database is seeded automatically
+on first run by the application's `DataLoader`.
+
+By default the backend runs with the `dev` profile so no configuration is
+required. For a production-like run supply real values:
+
+```bash
+SPRING_PROFILES_ACTIVE= JWT_SECRET=$(openssl rand -base64 64) docker compose up --build
+```
+

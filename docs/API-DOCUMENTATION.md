@@ -42,6 +42,14 @@ Validation errors (400) additionally populate `fieldErrors`:
 }
 ```
 
+### Rate limiting
+
+`/api/auth/**` endpoints are rate limited per client IP with a token bucket:
+a burst of up to 10 requests, refilling at 10 requests/minute (configurable
+via `RATE_LIMIT_CAPACITY`, `RATE_LIMIT_REFILL_PER_MINUTE`, and
+`RATE_LIMIT_ENABLED`). Throttled requests receive `429 Too Many Requests`
+with the standard error shape.
+
 ---
 
 ## Auth
@@ -66,6 +74,8 @@ Response `201 Created`:
   "token": "eyJhbGciOiJIUzI1NiJ9...",
   "tokenType": "Bearer",
   "expiresInMs": 86400000,
+  "refreshToken": "3q2xJ9kP...opaque-url-safe-base64...",
+  "refreshExpiresInMs": 2592000000,
   "user": {
     "id": 8,
     "email": "rider3@dispatchhub.com",
@@ -89,6 +99,33 @@ Request:
 Response `200 OK`: same shape as register's `AuthResponse`.
 
 Errors: `401` invalid credentials or disabled account.
+
+### `POST /api/auth/refresh`
+**Auth**: none (the refresh token itself is the credential)
+
+Exchanges a valid refresh token for a new access + refresh token pair.
+Refresh tokens are opaque, single-use, and rotated on every call: the
+presented token is revoked and a replacement is returned. Presenting an
+already-used (rotated) token revokes **all** of that user's refresh tokens,
+on the assumption the token was stolen.
+
+Request:
+```json
+{ "refreshToken": "3q2xJ9kP...opaque-url-safe-base64..." }
+```
+
+Response `200 OK`: same shape as register's `AuthResponse`.
+
+Errors: `401` unknown, revoked, or expired refresh token, or disabled account.
+
+### `POST /api/auth/logout`
+**Auth**: any authenticated user
+
+Revokes every active refresh token belonging to the caller ("log out
+everywhere"). The current access token is not invalidated — it simply
+expires on its own (`expiresInMs`).
+
+Response `204 No Content`.
 
 ---
 
@@ -124,8 +161,15 @@ Request:
 
 Response `200 OK`:
 ```json
-{ "estimatedFare": 18.40, "distanceKm": 13.2, "estimatedDurationMinutes": 26.4 }
+{ "estimatedFare": 18.40, "distanceKm": 13.2, "estimatedDurationMinutes": 26.4, "surgeMultiplier": 1.0 }
 ```
+
+`surgeMultiplier` is demand-based: it rises linearly from the base `1.0`
+toward `MAX_SURGE_MULTIPLIER` (default `2.5`) as waiting `REQUESTED` trips
+outnumber `AVAILABLE` drivers, and is already applied to `estimatedFare`.
+Trip requests compute their own fare at request time, so the multiplier a
+rider was shown can differ slightly from the one applied if demand shifts
+between preview and request.
 
 ### `GET /api/trips`
 **Auth**: `ADMIN`
@@ -200,6 +244,26 @@ Response `200 OK`:
 
 Errors: `404` if the trip doesn't exist.
 
+### `GET /api/trips/{id}/events`
+**Auth**: trip's rider, assigned driver, or `ADMIN` (same rule as `GET /api/trips/{id}`)
+
+Server-sent-events (`text/event-stream`) stream of live status updates for
+one trip — the push-based alternative to polling `GET /api/trips/{id}`.
+The current `TripResponse` snapshot is sent immediately as the first
+event, then one `trip-update` event per state change. The stream closes
+automatically when the trip reaches `COMPLETED` or `CANCELLED` (or after a
+30-minute idle timeout — clients should reconnect if they still care).
+
+```
+event: trip-update
+data: { ...TripResponse JSON... }
+```
+
+Note for browser clients: the native `EventSource` API cannot send an
+`Authorization` header. Use a fetch-based SSE reader (e.g.
+`@microsoft/fetch-event-source`) that attaches the JWT like any other
+request.
+
 ### `POST /api/trips/{id}/accept`
 **Auth**: `DRIVER`
 
@@ -253,8 +317,16 @@ Request:
 { "rating": 5, "comment": "Smooth ride, very punctual driver." }
 ```
 
-**Current status**: not implemented. Returns `501 Not Implemented` — see
-Known Bugs / Missing Features in the root README.
+`rating` is required (1–5); `comment` is optional (max 1000 chars).
+
+Response `201 Created`:
+```json
+{ "id": 1, "tripId": 4, "driverId": 2, "rating": 5, "comment": "Smooth ride, very punctual driver.", "createdAt": "2026-07-20T12:00:00Z" }
+```
+
+Errors: `403` if the trip belongs to another rider, `409` if the trip is not
+`COMPLETED` or has already been reviewed, `404` if the trip doesn't exist.
+Submitting a review recomputes the driver's average rating.
 
 ---
 
@@ -329,13 +401,66 @@ Request:
 { "vehicleMake": "Toyota", "vehicleModel": "Camry", "vehicleColor": "Silver", "licensePlate": "7ABC123" }
 ```
 
+### `GET /api/drivers/me/earnings`
+**Auth**: `DRIVER`
+
+Earnings summary for the authenticated driver's completed trips. Query
+params `from` and `to` are optional ISO-8601 instants; the default window
+is the last 30 days. Earnings use `finalFare` when recorded, falling back
+to `fareEstimate` (the same rule as admin revenue analytics).
+
+Response `200 OK`:
+```json
+{
+  "driverId": 3,
+  "from": "2026-06-20T10:00:00Z",
+  "to": "2026-07-20T10:00:00Z",
+  "completedTrips": 12,
+  "totalEarnings": 214.80,
+  "averageFare": 17.90,
+  "totalDistanceKm": 96.4
+}
+```
+
+Errors: `400` if `from` is after `to`, `404` if the caller has no driver profile.
+
 ### `GET /api/drivers/nearby`
 **Auth**: any authenticated user
 
-Query params: `lat`, `lng`, `radiusKm` (default `5`).
+Query params: `lat`, `lng`, `radiusKm` (default `5`, max `50`).
 
-**Current status**: not implemented. Returns `501 Not Implemented` — see
-Missing Features in the root README.
+Returns `AVAILABLE` drivers with a known location within `radiusKm` of the
+given point, sorted nearest-first, capped at 20 results. Response is a JSON
+array of driver profile objects (same shape as `GET /api/drivers/{id}`).
+An out-of-range `radiusKm` returns `400 Bad Request`.
+
+---
+
+## Geo
+
+### `GET /api/geo/geocode`
+**Auth**: any authenticated user
+
+Forward-geocodes a typed address via a Nominatim-compatible provider
+(default: OpenStreetMap's public instance, configurable with
+`GEOCODING_BASE_URL`). Results are cached server-side.
+
+Query params: `q` — the address text, minimum 3 characters.
+
+Response `200 OK`:
+```json
+[
+  {
+    "displayName": "Ferry Building, 1, The Embarcadero, San Francisco, California, USA",
+    "lat": 37.7955,
+    "lng": -122.3937
+  }
+]
+```
+Up to 5 matches, best first; an empty array when nothing matches.
+
+Errors: `400` if `q` is shorter than 3 characters; `500` if the upstream
+geocoding provider is unreachable.
 
 ---
 
@@ -405,9 +530,19 @@ last 30 days).
 ### `POST /api/admin/trips/{id}/force-cancel`
 **Auth**: `ADMIN`
 
-**Current status**: not implemented. Returns `501 Not Implemented` — see
-Missing Features in the root README (recovery endpoint for trips stuck
-mid-lifecycle).
+Recovery endpoint for trips stuck mid-lifecycle (e.g. a driver's app
+crashed). Force-cancels a trip in any non-terminal state, bypassing the
+normal caller-ownership rules, and returns the assigned driver (if any)
+to `AVAILABLE`.
+
+Request (optional body):
+```json
+{ "reason": "Driver unreachable for 30 minutes" }
+```
+
+Response `200 OK`: updated `TripResponse` with `status: "CANCELLED"`.
+Returns `409` if the trip is already `COMPLETED` or `CANCELLED`, `404` if it
+doesn't exist.
 
 ---
 

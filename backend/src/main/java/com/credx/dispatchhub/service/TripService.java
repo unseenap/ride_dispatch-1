@@ -37,6 +37,14 @@ public class TripService {
     private final DriverProfileRepository driverProfileRepository;
     private final UserRepository userRepository;
     private final FareEstimationService fareEstimationService;
+    private final TripEventPublisher tripEventPublisher;
+
+    /** Builds the response and queues an SSE update for the trip's subscribers. */
+    private TripResponse respondAndPublish(Trip trip) {
+        TripResponse response = toResponse(trip);
+        tripEventPublisher.publish(response);
+        return response;
+    }
 
     @Transactional
     public TripResponse requestTrip(Long riderId, TripRequest request) {
@@ -82,11 +90,6 @@ public class TripService {
                 ? tripRepository.findByStatus(status, pageable)
                 : tripRepository.findAll(pageable);
 
-        // page.map() iterates each row and calls toResponse(), which touches
-        // trip.getRider() and trip.getDriver() - both FetchType.LAZY - so a
-        // "page" of 20 trips means up to 41 additional SELECTs (1 for rider +
-        // 1 for driver's user, per row) on top of the initial page query.
-        // Enable SHOW_SQL to see it.
         return page.map(this::toResponse);
     }
 
@@ -156,7 +159,7 @@ public class TripService {
                 .changedAt(Instant.now())
                 .build());
 
-        return toResponse(tripRepository.save(trip));
+        return respondAndPublish(tripRepository.save(trip));
     }
 
     @Transactional
@@ -174,7 +177,7 @@ public class TripService {
                 .changedAt(Instant.now())
                 .build());
 
-        return toResponse(tripRepository.save(trip));
+        return respondAndPublish(tripRepository.save(trip));
     }
 
     @Transactional
@@ -192,7 +195,7 @@ public class TripService {
                 .changedAt(Instant.now())
                 .build());
 
-        return toResponse(tripRepository.save(trip));
+        return respondAndPublish(tripRepository.save(trip));
     }
 
     @Transactional
@@ -220,7 +223,7 @@ public class TripService {
         driver.setTotalTrips(driver.getTotalTrips() + 1);
         driverProfileRepository.save(driver);
 
-        return toResponse(tripRepository.save(trip));
+        return respondAndPublish(tripRepository.save(trip));
     }
 
     @Transactional
@@ -257,7 +260,41 @@ public class TripService {
             driverProfileRepository.save(driver);
         }
 
-        return toResponse(tripRepository.save(trip));
+        return respondAndPublish(tripRepository.save(trip));
+    }
+
+    /**
+     * Admin recovery for stuck trips: force-cancels a trip in any non-terminal
+     * state (e.g. a driver's app died mid-trip), bypassing the caller-ownership
+     * rules of {@link #cancelTrip}. Frees the assigned driver if they are still
+     * marked ON_TRIP.
+     */
+    @Transactional
+    public TripResponse forceCancelTrip(Long tripId, String reason) {
+        Trip trip = tripRepository.findByIdForUpdate(tripId)
+                .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + tripId));
+
+        if (trip.getStatus() == TripStatus.COMPLETED || trip.getStatus() == TripStatus.CANCELLED) {
+            throw new InvalidTripStateException("Trip is already " + trip.getStatus());
+        }
+
+        String note = (reason != null && !reason.isBlank()) ? reason : "Force-cancelled by admin";
+        trip.setStatus(TripStatus.CANCELLED);
+        trip.setCancelledAt(Instant.now());
+        trip.setCancellationReason(note);
+        trip.addStatusHistory(TripStatusHistory.builder()
+                .status(TripStatus.CANCELLED)
+                .changedAt(Instant.now())
+                .note(note)
+                .build());
+
+        if (trip.getDriver() != null && trip.getDriver().getStatus() == DriverStatus.ON_TRIP) {
+            DriverProfile driver = trip.getDriver();
+            driver.setStatus(DriverStatus.AVAILABLE);
+            driverProfileRepository.save(driver);
+        }
+
+        return respondAndPublish(tripRepository.save(trip));
     }
 
     /**

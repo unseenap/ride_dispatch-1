@@ -29,6 +29,7 @@ public class AuthService {
     private final RiderProfileRepository riderProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -67,16 +68,10 @@ public class AuthService {
             riderProfileRepository.save(riderProfile);
         }
 
-        String token = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole().name());
-        return AuthResponse.builder()
-                .token(token)
-                .tokenType("Bearer")
-                .expiresInMs(jwtService.getExpirationMs())
-                .user(toUserResponse(user))
-                .build();
+        return buildAuthResponse(user);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
@@ -89,11 +84,34 @@ public class AuthService {
             throw new InvalidCredentialsException("This account has been disabled");
         }
 
+        return buildAuthResponse(user);
+    }
+
+    /**
+     * Exchanges a valid refresh token for a new access + refresh token pair.
+     * The presented refresh token is single-use: it is revoked here and a
+     * replacement is issued (rotation).
+     */
+    @Transactional
+    public AuthResponse refresh(String refreshToken) {
+        User user = refreshTokenService.validateAndRevoke(refreshToken);
+        return buildAuthResponse(user);
+    }
+
+    /** Revokes all refresh tokens for the user; the access token simply expires. */
+    @Transactional
+    public void logout(Long userId) {
+        refreshTokenService.revokeAllForUser(userId);
+    }
+
+    private AuthResponse buildAuthResponse(User user) {
         String token = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole().name());
         return AuthResponse.builder()
                 .token(token)
                 .tokenType("Bearer")
                 .expiresInMs(jwtService.getExpirationMs())
+                .refreshToken(refreshTokenService.issue(user))
+                .refreshExpiresInMs(refreshTokenService.getRefreshExpirationMs())
                 .user(toUserResponse(user))
                 .build();
     }

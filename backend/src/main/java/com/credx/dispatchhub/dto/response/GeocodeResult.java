@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthResponse {
-    private String token;
-    private String tokenType;
-    private long expiresInMs;
-    private String refreshToken;
-    private long refreshExpiresInMs;
-    private UserResponse user;
+public class GeocodeResult {
+    private String displayName;
+    private double lat;
+    private double lng;
 }
