@@ -5,6 +5,7 @@ import com.credx.dispatchhub.enums.DriverStatus;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,6 +22,10 @@ public interface DriverProfileRepository extends JpaRepository<DriverProfile, Lo
     @Query("select d from DriverProfile d where d.user.id = :userId")
     Optional<DriverProfile> findByUserIdForUpdate(@Param("userId") Long userId);
 
+    @EntityGraph(attributePaths = "user")
+    Page<DriverProfile> findAll(Pageable pageable);
+
+    @EntityGraph(attributePaths = "user")
     Page<DriverProfile> findByStatus(DriverStatus status, Pageable pageable);
 
     List<DriverProfile> findByStatus(DriverStatus status);

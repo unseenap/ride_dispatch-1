@@ -28,10 +28,6 @@ public class DriverService {
                 ? driverProfileRepository.findByStatus(status, pageable)
                 : driverProfileRepository.findAll(pageable);
 
-        // Each call to driver.getUser() below lazily triggers its own SELECT
-        // since DriverProfile.user is FetchType.LAZY and the page query above
-        // doesn't join it - fine at seed-data scale, not fine with a real
-        // driver roster.
         return page.map(this::toResponse);
     }
 

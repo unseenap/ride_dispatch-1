@@ -82,11 +82,6 @@ public class TripService {
                 ? tripRepository.findByStatus(status, pageable)
                 : tripRepository.findAll(pageable);
 
-        // page.map() iterates each row and calls toResponse(), which touches
-        // trip.getRider() and trip.getDriver() - both FetchType.LAZY - so a
-        // "page" of 20 trips means up to 41 additional SELECTs (1 for rider +
-        // 1 for driver's user, per row) on top of the initial page query.
-        // Enable SHOW_SQL to see it.
         return page.map(this::toResponse);
     }
 
