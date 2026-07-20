@@ -1,2 +1,482 @@
-// Intentionally minimal - most layout comes from the shared .dh-page /
-// .dh-card-grid utility classes in styles.scss.
+:host {
+  display: block;
+  color: #18181b;
+}
+
+.dashboard-page {
+  width: min(100%, 1440px);
+  max-width: none;
+  padding: clamp(24px, 4vw, 56px);
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  padding-bottom: clamp(28px, 4vw, 44px);
+  border-bottom: 1px solid #e4e4e7;
+}
+
+.header-copy {
+  max-width: 720px;
+}
+
+.header-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: #52525b;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.live-indicator {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #16a34a;
+  box-shadow: 0 0 0 4px rgb(22 163 74 / 10%);
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  color: #09090b;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 650;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+}
+
+.dashboard-header p {
+  max-width: 58ch;
+  margin: 14px 0 0;
+  color: #71717a;
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+  line-height: 1.65;
+}
+
+.role-context {
+  display: grid;
+  gap: 6px;
+  min-width: 176px;
+  padding: 14px 16px;
+  border: 1px solid #e4e4e7;
+  border-radius: 14px;
+  background: rgb(255 255 255 / 72%);
+  box-shadow: 0 1px 2px rgb(24 24 27 / 3%);
+}
+
+.role-context__label {
+  color: #a1a1aa;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.role-context__value {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #27272a;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.role-context__value mat-icon {
+  width: 17px;
+  height: 17px;
+  color: #2563eb;
+  font-size: 17px;
+}
+
+.metrics-section {
+  padding-top: clamp(30px, 4vw, 48px);
+}
+
+.metrics-section--secondary {
+  padding-top: clamp(36px, 5vw, 64px);
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.section-heading h2,
+.state-panel h2 {
+  margin: 0;
+  color: #18181b;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.section-heading p {
+  margin: 5px 0 0;
+  color: #a1a1aa;
+  font-size: 0.82rem;
+}
+
+.freshness-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  border: 1px solid #dcfce7;
+  border-radius: 8px;
+  background: #f0fdf4;
+  color: #15803d;
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.freshness-badge mat-icon {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+}
+
+.metrics-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.metrics-grid--primary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.metrics-grid--secondary {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.metric-card--featured {
+  grid-column: span 2;
+}
+
+/* The shared stat card has an inline component template. These scoped
+   overrides modernize its presentation without changing its TypeScript API. */
+:host ::ng-deep .metric-card .stat-card {
+  position: relative;
+  min-height: 142px;
+  height: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  overflow: hidden;
+  padding: 20px;
+  border: 1px solid #e4e4e7;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgb(24 24 27 / 3%);
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+:host ::ng-deep .metric-card .stat-card:hover {
+  border-color: #d4d4d8;
+  box-shadow: 0 10px 28px rgb(39 39 42 / 7%);
+  transform: translateY(-2px);
+}
+
+:host ::ng-deep .metric-card .stat-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 22%);
+}
+
+:host ::ng-deep .metric-card .stat-icon mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+:host ::ng-deep .metric-card .stat-body {
+  width: 100%;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+:host ::ng-deep .metric-card .stat-value {
+  color: #09090b;
+  font-size: clamp(1.75rem, 3vw, 2.35rem);
+  font-weight: 650;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+}
+
+:host ::ng-deep .metric-card .stat-label {
+  max-width: 96px;
+  color: #71717a;
+  font-size: 0.76rem;
+  font-weight: 550;
+  line-height: 1.35;
+  text-align: right;
+}
+
+:host ::ng-deep .metric-card--featured .stat-card {
+  background:
+    radial-gradient(circle at 92% 0%, rgb(37 99 235 / 9%), transparent 36%),
+    #ffffff;
+}
+
+:host ::ng-deep .metric-card--featured .stat-value {
+  font-size: clamp(2.15rem, 4vw, 3rem);
+}
+
+.dashboard-state {
+  padding-top: clamp(30px, 4vw, 48px);
+}
+
+.state-panel {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: clamp(22px, 4vw, 32px);
+  border: 1px solid #e4e4e7;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.state-panel p {
+  margin: 6px 0 0;
+  color: #71717a;
+  line-height: 1.55;
+}
+
+.state-panel--error {
+  border-color: #fecaca;
+  background: #fffafa;
+}
+
+.state-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.state-panel--empty {
+  min-height: 320px;
+  justify-content: center;
+  padding: clamp(32px, 7vw, 72px);
+  background:
+    linear-gradient(135deg, rgb(248 250 252 / 80%), rgb(255 255 255 / 100%));
+}
+
+.state-illustration {
+  position: relative;
+  width: min(100%, 260px);
+  height: 150px;
+  flex: 0 1 260px;
+}
+
+.route-line {
+  position: absolute;
+  inset: 28px 18px 24px;
+  border: 2px dashed #bfdbfe;
+  border-left-color: transparent;
+  border-radius: 48% 52% 42% 58%;
+  transform: rotate(-7deg);
+}
+
+.route-car {
+  position: absolute;
+  top: 48%;
+  left: 48%;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 13px;
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 14px 30px rgb(37 99 235 / 24%);
+  transform: translate(-50%, -50%) rotate(-8deg);
+}
+
+.route-start,
+.route-end {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border: 4px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #d4d4d8;
+}
+
+.route-start {
+  bottom: 17px;
+  left: 16px;
+  background: #2563eb;
+}
+
+.route-end {
+  top: 20px;
+  right: 14px;
+  background: #16a34a;
+}
+
+.state-copy {
+  max-width: 420px;
+}
+
+.state-copy h2 {
+  margin-top: 7px;
+  font-size: clamp(1.35rem, 3vw, 1.8rem);
+}
+
+.state-eyebrow {
+  color: #2563eb;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.state-heading {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.skeleton-card {
+  display: flex;
+  min-height: 142px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px;
+  border: 1px solid #eeeeef;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.skeleton-card:first-child {
+  grid-column: span 2;
+}
+
+.skeleton {
+  display: block;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #f1f1f2 20%, #fafafa 50%, #f1f1f2 80%);
+  background-size: 220% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+.skeleton-title { width: 124px; height: 16px; }
+.skeleton-caption { width: 190px; height: 11px; }
+.skeleton-icon { width: 34px; height: 34px; border-radius: 9px; }
+.skeleton-value { width: 54px; height: 32px; margin-top: auto; }
+.skeleton-label { width: 82px; height: 10px; align-self: flex-end; margin-top: -12px; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+@keyframes skeleton-shimmer {
+  to { background-position-x: -220%; }
+}
+
+@media (max-width: 1100px) {
+  .metrics-grid--primary,
+  .skeleton-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .dashboard-page {
+    padding: 24px 18px 40px;
+  }
+
+  .dashboard-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .role-context {
+    width: 100%;
+  }
+
+  .metrics-grid--primary,
+  .metrics-grid--secondary,
+  .skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-card--featured,
+  .skeleton-card:first-child {
+    grid-column: auto;
+  }
+
+  .state-panel--empty {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .state-illustration {
+    flex-basis: 150px;
+  }
+}
+
+@media (max-width: 420px) {
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  :host ::ng-deep .metric-card .stat-body {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  :host ::ng-deep .metric-card .stat-label {
+    max-width: none;
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+
+  :host ::ng-deep .metric-card .stat-card {
+    transition: none;
+  }
+
+  :host ::ng-deep .metric-card .stat-card:hover {
+    transform: none;
+  }
+}

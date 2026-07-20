@@ -1,32 +1,104 @@
-<div class="dh-page">
-  <div class="dh-page-header">
-    <h1>Welcome back{{ currentUser() ? ', ' + currentUser()!.fullName : '' }}</h1>
-  </div>
+<div class="dh-page dashboard-page">
+  <header class="dashboard-header">
+    <div class="header-copy">
+      <div class="header-kicker">
+        <span class="live-indicator" aria-hidden="true"></span>
+        Operations overview
+      </div>
+      <h1>Welcome back{{ currentUser() ? ', ' + currentUser()!.fullName : '' }}</h1>
+      <p>Monitor today’s dispatch activity and fleet availability at a glance.</p>
+    </div>
+
+    @if (currentUser(); as user) {
+      <div class="role-context" aria-label="Current account role">
+        <span class="role-context__label">Workspace access</span>
+        <span class="role-context__value">
+          <mat-icon aria-hidden="true">verified_user</mat-icon>
+          {{ user.role }}
+        </span>
+      </div>
+    }
+  </header>
 
   @if (loading()) {
-    <div class="dh-loading-state">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading dashboard...</p>
-    </div>
+    <section class="dashboard-state" aria-live="polite" aria-busy="true">
+      <div class="state-heading">
+        <span class="skeleton skeleton-title"></span>
+        <span class="skeleton skeleton-caption"></span>
+      </div>
+      <div class="skeleton-grid" aria-label="Loading dashboard statistics">
+        @for (item of [1, 2, 3, 4, 5, 6, 7]; track item) {
+          <div class="skeleton-card">
+            <span class="skeleton skeleton-icon"></span>
+            <span class="skeleton skeleton-value"></span>
+            <span class="skeleton skeleton-label"></span>
+          </div>
+        }
+      </div>
+      <span class="sr-only">Loading dashboard statistics</span>
+    </section>
   } @else if (error()) {
-    <mat-card class="dh-empty-state">
-      <mat-icon>error_outline</mat-icon>
-      <p>{{ error() }}</p>
-    </mat-card>
+    <section class="dashboard-state" aria-live="assertive">
+      <div class="state-panel state-panel--error" role="alert">
+        <div class="state-icon" aria-hidden="true">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+        <div>
+          <h2>Dashboard unavailable</h2>
+          <p>{{ error() }}</p>
+        </div>
+      </div>
+    </section>
   } @else if (stats(); as s) {
-    <div class="dh-card-grid">
-      <app-stat-card label="Trips today" [value]="s.totalTripsToday" icon="local_taxi" iconColor="#1e88e5"></app-stat-card>
-      <app-stat-card label="Active drivers" [value]="s.activeDrivers" icon="badge" iconColor="#43a047"></app-stat-card>
-      <app-stat-card label="Completed today" [value]="s.completedTripsToday" icon="check_circle" iconColor="#43a047"></app-stat-card>
-      <app-stat-card label="In progress" [value]="s.tripsInProgress" icon="autorenew" iconColor="#fb8c00"></app-stat-card>
-      <app-stat-card label="Cancelled today" [value]="s.cancelledTripsToday" icon="cancel" iconColor="#e53935"></app-stat-card>
-      <app-stat-card label="Registered drivers" [value]="s.totalRegisteredDrivers" icon="groups" iconColor="#8e24aa"></app-stat-card>
-      <app-stat-card label="Registered riders" [value]="s.totalRegisteredRiders" icon="person" iconColor="#8e24aa"></app-stat-card>
-    </div>
+    <section class="metrics-section" aria-labelledby="today-heading">
+      <div class="section-heading">
+        <div>
+          <h2 id="today-heading">Today’s activity</h2>
+          <p>Live trip flow and driver coverage</p>
+        </div>
+        <div class="freshness-badge">
+          <mat-icon aria-hidden="true">bolt</mat-icon>
+          Live data
+        </div>
+      </div>
+
+      <div class="metrics-grid metrics-grid--primary">
+        <app-stat-card class="metric-card metric-card--featured" label="Trips today" [value]="s.totalTripsToday" icon="local_taxi" iconColor="#2563eb"></app-stat-card>
+        <app-stat-card class="metric-card" label="Active drivers" [value]="s.activeDrivers" icon="badge" iconColor="#059669"></app-stat-card>
+        <app-stat-card class="metric-card" label="Completed today" [value]="s.completedTripsToday" icon="check_circle" iconColor="#059669"></app-stat-card>
+        <app-stat-card class="metric-card" label="In progress" [value]="s.tripsInProgress" icon="autorenew" iconColor="#d97706"></app-stat-card>
+        <app-stat-card class="metric-card" label="Cancelled today" [value]="s.cancelledTripsToday" icon="cancel" iconColor="#dc2626"></app-stat-card>
+      </div>
+    </section>
+
+    <section class="metrics-section metrics-section--secondary" aria-labelledby="network-heading">
+      <div class="section-heading section-heading--compact">
+        <div>
+          <h2 id="network-heading">Network</h2>
+          <p>Registered marketplace participants</p>
+        </div>
+      </div>
+
+      <div class="metrics-grid metrics-grid--secondary">
+        <app-stat-card class="metric-card" label="Registered drivers" [value]="s.totalRegisteredDrivers" icon="groups" iconColor="#4f46e5"></app-stat-card>
+        <app-stat-card class="metric-card" label="Registered riders" [value]="s.totalRegisteredRiders" icon="person" iconColor="#4f46e5"></app-stat-card>
+      </div>
+    </section>
   } @else {
-    <mat-card class="dh-empty-state">
-      <mat-icon>dashboard</mat-icon>
-      <p>Use the sidebar to request a ride or view your trip history.</p>
-    </mat-card>
+    <section class="dashboard-state">
+      <div class="state-panel state-panel--empty">
+        <div class="state-illustration" aria-hidden="true">
+          <div class="route-line"></div>
+          <mat-icon class="route-car">local_taxi</mat-icon>
+          <span class="route-start"></span>
+          <span class="route-end"></span>
+        </div>
+        <div class="state-copy">
+          <span class="state-eyebrow">Your workspace is ready</span>
+          <h2>Where would you like to go?</h2>
+          <p>Use the navigation to request a ride, review incoming trips, or revisit your trip history.</p>
+        </div>
+      </div>
+    </section>
   }
 </div>
