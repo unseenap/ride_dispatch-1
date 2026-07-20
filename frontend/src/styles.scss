@@ -2,6 +2,7 @@
 @use 'app/features/auth/auth-shell';
 @use 'app/features/shared/layout/navigation-shell';
 @use 'app/features/dashboard/dashboard-shell';
+@use 'app/features/trips/trip-management-shell';
 
 :root {
   color-scheme: light;
