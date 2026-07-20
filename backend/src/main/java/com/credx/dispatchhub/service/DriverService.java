@@ -54,10 +54,12 @@ public class DriverService {
         DriverProfile driver = driverProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Driver profile not found for this user"));
 
-        if (driver.getStatus() == DriverStatus.ON_TRIP && request.status() == DriverStatus.AVAILABLE) {
-            // A driver mid-trip shouldn't be able to flip straight back to AVAILABLE;
-            // trip completion is what does that transition.
-            throw new IllegalArgumentException("Cannot go available while a trip is in progress");
+        if (driver.getStatus() == DriverStatus.ON_TRIP && request.status() != DriverStatus.ON_TRIP) {
+            throw new IllegalArgumentException("Cannot change availability while a trip is in progress");
+        }
+
+        if (driver.getStatus() != DriverStatus.ON_TRIP && request.status() == DriverStatus.ON_TRIP) {
+            throw new IllegalArgumentException("ON_TRIP status is managed when accepting a trip");
         }
 
         driver.setStatus(request.status());
