@@ -1,2 +1,3 @@
 # Local development toolchains
 .tools/
+/.agents,md
