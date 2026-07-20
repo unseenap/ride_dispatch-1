@@ -1,0 +1,181 @@
+{"kind":"deck","id":"pr/f0hbfw","name":"Deck"}
+{"kind":"layout","layoutId":"d36f55a5-01a1-40cd-b8e7-0f99d0cf5492","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"685e1109-4c8c-4eb5-a0b2-351937ea83d0","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/xm0t5e","slide":1,"title":"ROUND 2 ENGINEERING STORY","textShapes":8}
+{"kind":"shape","id":"sh/1o7el83a","slide":1,"name":"accent-line","bbox":[0,0,1280,10]}
+{"kind":"shape","id":"sh/e1gvqt4z","slide":1,"name":"eyebrow-bg","bbox":[64,64,210,28]}
+{"kind":"textbox","id":"sh/f2pwjylk","slide":1,"name":"eyebrow","text":"ROUND 2 ENGINEERING STORY","textPreview":"ROUND 2 ENGINEERING STORY","textChars":25,"textLines":1,"bbox":[76,69,186,18]}
+{"kind":"textbox","id":"sh/orydwn21","slide":1,"name":"deck-title","text":"DispatchHub","textPreview":"DispatchHub","textChars":11,"textLines":1,"bbox":[64,130,560,78]}
+{"kind":"textbox","id":"sh/ps7eps3m","slide":1,"name":"deck-subtitle","text":"Errors fixed. Experience rebuilt.","textPreview":"Errors fixed. Experience rebuilt.","textChars":33,"textLines":1,"bbox":[64,214,555,112]}
+{"kind":"textbox","id":"sh/2pgvudkv","slide":1,"name":"deck-summary","text":"How we stabilized Angular 20, removed five initialization failures, and transformed a functional ride-dispatch app into a cohesive enterprise product.","textPreview":"How we stabilized Angular 20, removed five initialization failures, and transformed a functional ride-dispatch app into a cohesive enterp...","textChars":150,"textLines":1,"bbox":[64,350,520,118]}
+{"kind":"textbox","id":"sh/4vedkjmx","slide":1,"name":"text","text":"GRAPHITE  #171717","textPreview":"GRAPHITE  #171717","textChars":17,"textLines":1,"bbox":[64,610,190,22]}
+{"kind":"textbox","id":"sh/5wnudo32","slide":1,"name":"text","text":"AMBER  #FFB800","textPreview":"AMBER  #FFB800","textChars":14,"textLines":1,"bbox":[272,610,160,22]}
+{"kind":"textbox","id":"sh/d07yx8jm","slide":1,"name":"footer","text":"DISPATCHHUB  /  JULY 2026","textPreview":"DISPATCHHUB  /  JULY 2026","textChars":25,"textLines":1,"bbox":[64,684,280,18]}
+{"kind":"textbox","id":"sh/czyx4321","slide":1,"name":"page","text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[1180,682,36,18]}
+{"kind":"image","id":"im/61ormxwj","slide":1,"name":"","geometry":"roundRect","alt":"DispatchHub product illustration","bbox":[690,54,526,590]}
+{"kind":"notes","id":"nt/xm0t5e","slide":1,"text":""}
+{"kind":"slide","id":"sl/bz3inr","slide":2,"title":"PROJECT TRANSFORMATION","textShapes":17}
+{"kind":"shape","id":"sh/ihknitwn","slide":2,"name":"eyebrow-bg","bbox":[64,48,190,28]}
+{"kind":"textbox","id":"sh/5kb6t8ve","slide":2,"name":"eyebrow","text":"PROJECT TRANSFORMATION","textPreview":"PROJECT TRANSFORMATION","textChars":22,"textLines":1,"bbox":[76,53,166,18]}
+{"kind":"textbox","id":"sh/4j2pk3et","slide":2,"name":"slide-title","text":"The application worked — but it was not presentation-ready","textPreview":"The application worked — but it was not presentation-ready","textChars":58,"textLines":1,"bbox":[64,94,1110,62]}
+{"kind":"textbox","id":"sh/vetonedc","slide":2,"name":"slide-subtitle","text":"A partially complete challenge codebase carried both technical blockers and a fragmented product experience.","textPreview":"A partially complete challenge codebase carried both technical blockers and a fragmented product experience.","textChars":108,"textLines":1,"bbox":[64,158,1050,48]}
+{"kind":"textbox","id":"sh/ud0netwr","slide":2,"name":"footer","text":"DISPATCHHUB  /  JULY 2026","textPreview":"DISPATCHHUB  /  JULY 2026","textChars":25,"textLines":1,"bbox":[64,684,280,18]}
+{"kind":"textbox","id":"sh/hgb6povi","slide":2,"name":"page","text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1180,682,36,18]}
+{"kind":"shape","id":"sh/gf25gjex","slide":2,"name":"challenge","bbox":[64,238,318,332]}
+{"kind":"textbox","id":"sh/7a9ojex0","slide":2,"name":"text","text":"~70%","textPreview":"~70%","textChars":4,"textLines":1,"bbox":[92,272,250,78]}
+{"kind":"textbox","id":"sh/6p0na9wv","slide":2,"name":"text","text":"challenge codebase complete","textPreview":"challenge codebase complete","textChars":27,"textLines":1,"bbox":[92,348,242,50]}
+{"kind":"textbox","id":"sh/03q58v6l","slide":2,"name":"text","text":"Intentional bugs, missing features, security risks, and a fixed delivery window raised the cost of every mistake.","textPreview":"Intentional bugs, missing features, security risks, and a fixed delivery window raised the cost of every mistake.","textChars":113,"textLines":1,"bbox":[92,426,245,104]}
+{"kind":"textbox","id":"sh/14z61076","slide":2,"name":"text","text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[430,242,44,28]}
+{"kind":"textbox","id":"sh/e1on6l8f","slide":2,"name":"text","text":"Toolchain conflict","textPreview":"Toolchain conflict","textChars":18,"textLines":1,"bbox":[488,238,350,30]}
+{"kind":"textbox","id":"sh/f2hozqp0","slide":2,"name":"text","text":"Angular 20 and TypeScript 5.6 could not agree.","textPreview":"Angular 20 and TypeScript 5.6 could not agree.","textChars":46,"textLines":1,"bbox":[488,273,560,42]}
+{"kind":"shape","id":"sh/sz654vq9","slide":2,"name":"box","bbox":[430,330,720,1]}
+{"kind":"textbox","id":"sh/d0f6x07u","slide":2,"name":"text","text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[430,350,44,28]}
+{"kind":"textbox","id":"sh/qdon2l8j","slide":2,"name":"text","text":"Initialization failures","textPreview":"Initialization failures","textChars":23,"textLines":1,"bbox":[488,346,350,30]}
+{"kind":"textbox","id":"sh/rex4vqpo","slide":2,"name":"text","text":"Five components used services before they were ready.","textPreview":"Five components used services before they were ready.","textChars":53,"textLines":1,"bbox":[488,381,560,42]}
+{"kind":"shape","id":"sh/cva5gf6t","slide":2,"name":"box","bbox":[430,438,720,1]}
+{"kind":"textbox","id":"sh/xwj69k7y","slide":2,"name":"text","text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[430,458,44,28]}
+{"kind":"textbox","id":"sh/lgvedgv6","slide":2,"name":"text","text":"Visual inconsistency","textPreview":"Visual inconsistency","textChars":20,"textLines":1,"bbox":[488,454,350,30]}
+{"kind":"textbox","id":"sh/kfmx4bul","slide":2,"name":"text","text":"Working screens felt disconnected and template-like.","textPreview":"Working screens felt disconnected and template-like.","textChars":52,"textLines":1,"bbox":[488,489,560,42]}
+{"kind":"notes","id":"nt/bz3inr","slide":2,"text":""}
+{"kind":"slide","id":"sl/4pk4zb","slide":3,"title":"PROJECT TRANSFORMATION","textShapes":16}
+{"kind":"shape","id":"sh/3a1o3i5k","slide":3,"name":"eyebrow-bg","bbox":[64,48,190,28]}
+{"kind":"textbox","id":"sh/oba5cnm5","slide":3,"name":"eyebrow","text":"PROJECT TRANSFORMATION","textPreview":"PROJECT TRANSFORMATION","textChars":22,"textLines":1,"bbox":[76,53,166,18]}
+{"kind":"textbox","id":"sh/pcj65sna","slide":3,"name":"slide-title","text":"The first blocker was version compatibility","textPreview":"The first blocker was version compatibility","textChars":43,"textLines":1,"bbox":[64,94,1110,62]}
+{"kind":"textbox","id":"sh/el8n6d4n","slide":3,"name":"slide-subtitle","text":"The build tool expected a newer TypeScript compiler than the project had pinned.","textPreview":"The build tool expected a newer TypeScript compiler than the project had pinned.","textChars":80,"textLines":1,"bbox":[64,158,1050,48]}
+{"kind":"textbox","id":"sh/fmh4zi58","slide":3,"name":"footer","text":"DISPATCHHUB  /  JULY 2026","textPreview":"DISPATCHHUB  /  JULY 2026","textChars":25,"textLines":1,"bbox":[64,684,280,18]}
+{"kind":"textbox","id":"sh/gna583mt","slide":3,"name":"page","text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1180,682,36,18]}
+{"kind":"shape","id":"sh/1ojm18ne","slide":3,"name":"old-stack","bbox":[64,244,342,268]}
+{"kind":"shape","id":"sh/6h8n2t4r","slide":3,"name":"eyebrow-bg","bbox":[90,270,84,28]}
+{"kind":"textbox","id":"sh/rih4vy5c","slide":3,"name":"eyebrow","text":"BEFORE","textPreview":"BEFORE","textChars":6,"textLines":1,"bbox":[102,275,60,18]}
+{"kind":"textbox","id":"sh/ve5k7eds","slide":3,"name":"text","text":"Angular build tools","textPreview":"Angular build tools","textChars":19,"textLines":1,"bbox":[90,326,260,30]}
+{"kind":"textbox","id":"sh/adwje9w7","slide":3,"name":"text","text":"20.3.x","textPreview":"20.3.x","textChars":6,"textLines":1,"bbox":[90,363,260,54]}
+{"kind":"textbox","id":"sh/xg729ovy","slide":3,"name":"text","text":"requires TypeScript ≥ 5.8 and < 6.0","textPreview":"requires TypeScript ≥ 5.8 and < 6.0","textChars":35,"textLines":1,"bbox":[90,430,250,54]}
+{"kind":"shape","id":"sh/wfe1gjed","slide":3,"name":"fix-stack","bbox":[469,244,342,268]}
+{"kind":"shape","id":"sh/jipkbyd4","slide":3,"name":"eyebrow-bg","bbox":[495,270,70,28]}
+{"kind":"textbox","id":"sh/ihgjitwj","slide":3,"name":"eyebrow","text":"FIX","textPreview":"FIX","textChars":3,"textLines":1,"bbox":[507,275,46,18]}
+{"kind":"textbox","id":"sh/5k72d8vu","slide":3,"name":"text","text":"TypeScript pin","textPreview":"TypeScript pin","textChars":14,"textLines":1,"bbox":[495,326,260,30]}
+{"kind":"textbox","id":"sh/kjy1k3e9","slide":3,"name":"text","text":"~5.8.0","textPreview":"~5.8.0","textChars":6,"textLines":1,"bbox":[495,363,260,54]}
+{"kind":"textbox","id":"sh/zml0zudk","slide":3,"name":"text","text":"aligned with Angular 20’s supported range","textPreview":"aligned with Angular 20’s supported range","textChars":41,"textLines":1,"bbox":[495,430,250,54]}
+{"kind":"shape","id":"sh/ylcj6pwz","slide":3,"name":"meaning","bbox":[874,244,342,268]}
+{"kind":"textbox","id":"sh/21knexgn","slide":3,"name":"text","text":"Why it mattered","textPreview":"Why it mattered","textChars":15,"textLines":1,"bbox":[902,276,250,30]}
+{"kind":"textbox","id":"sh/32t4n2x8","slide":3,"name":"text","text":"A compatible compiler turns confusing downstream errors into a stable foundation for real debugging.","textPreview":"A compatible compiler turns confusing downstream errors into a stable foundation for real debugging.","textChars":100,"textLines":1,"bbox":[902,336,255,110]}
+{"kind":"textbox","id":"sh/o325g7yt","slide":3,"name":"text","text":"Foundation first","textPreview":"Foundation first","textChars":16,"textLines":1,"bbox":[902,470,220,22]}
+{"kind":"notes","id":"nt/4pk4zb","slide":3,"text":""}
+{"kind":"slide","id":"sl/yy76ru","slide":4,"title":"PROJECT TRANSFORMATION","textShapes":11}
+{"kind":"shape","id":"sh/sf25s761","slide":4,"name":"eyebrow-bg","bbox":[64,48,190,28]}
+{"kind":"textbox","id":"sh/ret4z2pg","slide":4,"name":"eyebrow","text":"PROJECT TRANSFORMATION","textPreview":"PROJECT TRANSFORMATION","textChars":22,"textLines":1,"bbox":[76,53,166,18]}
+{"kind":"textbox","id":"sh/qdknqhov","slide":4,"name":"slide-title","text":"Five components asked for services before Angular supplied them","textPreview":"Five components asked for services before Angular supplied them","textChars":63,"textLines":1,"bbox":[64,94,1110,62]}
+{"kind":"textbox","id":"sh/14v6pw7i","slide":4,"name":"slide-subtitle","text":"TS2729 is simply an order-of-initialization problem: a field runs too early.","textPreview":"TS2729 is simply an order-of-initialization problem: a field runs too early.","textChars":76,"textLines":1,"bbox":[64,158,1050,48]}
+{"kind":"textbox","id":"sh/03m5wr6x","slide":4,"name":"footer","text":"DISPATCHHUB  /  JULY 2026","textPreview":"DISPATCHHUB  /  JULY 2026","textChars":25,"textLines":1,"bbox":[64,684,280,18]}
+{"kind":"textbox","id":"sh/f2donmpc","slide":4,"name":"page","text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1180,682,36,18]}
+{"kind":"shape","id":"sh/e14nuhor","slide":4,"name":"before-code","bbox":[64,240,530,336]}
+{"kind":"shape","id":"sh/p8f6twne","slide":4,"name":"eyebrow-bg","bbox":[88,264,118,28]}
+{"kind":"textbox","id":"sh/o7m50r69","slide":4,"name":"eyebrow","text":"UNSAFE ORDER","textPreview":"UNSAFE ORDER","textChars":12,"textLines":1,"bbox":[100,269,94,18]}
+{"kind":"textbox","id":"sh/ux47y5cf","slide":4,"name":"code-before","text":"constructor(private fb: FormBuilder) {}\n\nform = this.fb.group({ ... });","textPreview":"constructor(private fb: FormBuilder) {} |  | form = this.fb.group({ ... });","textChars":71,"textLines":3,"bbox":[88,326,450,116]}
+{"kind":"shape","id":"sh/vyd8rad0","slide":4,"name":"error-note","bbox":[88,475,430,64]}
+{"kind":"textbox","id":"sh/wzmp0ful","slide":4,"name":"text","text":"this.fb is used before initialization","textPreview":"this.fb is used before initialization","textChars":37,"textLines":1,"bbox":[106,495,390,24]}
+{"kind":"shape","id":"sh/h0vqtkv6","slide":4,"name":"after-code","bbox":[626,240,590,336]}
+{"kind":"shape","id":"sh/i1472pcb","slide":4,"name":"eyebrow-bg","bbox":[650,264,102,28]}
+{"kind":"textbox","id":"sh/j2d8vadw","slide":4,"name":"eyebrow","text":"SAFE ORDER","textPreview":"SAFE ORDER","textChars":10,"textLines":1,"bbox":[662,269,78,18]}
+{"kind":"textbox","id":"sh/43mp4fuh","slide":4,"name":"code-after","text":"private readonly fb = inject(FormBuilder);\n\nform = this.fb.group({ ... });","textPreview":"private readonly fb = inject(FormBuilder); |  | form = this.fb.group({ ... });","textChars":74,"textLines":3,"bbox":[650,326,500,116]}
+{"kind":"shape","id":"sh/54fqxkv2","slide":4,"name":"success-note","bbox":[650,475,492,64]}
+{"kind":"textbox","id":"sh/y5k7qlc7","slide":4,"name":"text","text":"Dependency exists before the form is created","textPreview":"Dependency exists before the form is created","textChars":44,"textLines":1,"bbox":[668,495,450,24]}
+{"kind":"notes","id":"nt/yy76ru","slide":4,"text":""}
+{"kind":"slide","id":"sl/c4c0jv","slide":5,"title":"PROJECT TRANSFORMATION","textShapes":22}
+{"kind":"shape","id":"sh/y94ry18f","slide":5,"name":"eyebrow-bg","bbox":[64,48,190,28]}
+{"kind":"textbox","id":"sh/lcvqtwr6","slide":5,"name":"eyebrow","text":"PROJECT TRANSFORMATION","textPreview":"PROJECT TRANSFORMATION","textChars":22,"textLines":1,"bbox":[76,53,166,18]}
+{"kind":"textbox","id":"sh/kbm90rql","slide":5,"name":"slide-title","text":"One repeatable pattern removed all five initialization failures","textPreview":"One repeatable pattern removed all five initialization failures","textChars":63,"textLines":1,"bbox":[64,94,1110,62]}
+{"kind":"textbox","id":"sh/b6t8nm94","slide":5,"name":"slide-subtitle","text":"We fixed the cause once, then applied it consistently to each affected standalone component.","textPreview":"We fixed the cause once, then applied it consistently to each affected standalone component.","textChars":92,"textLines":1,"bbox":[64,158,1050,48]}
+{"kind":"textbox","id":"sh/a5kruhsj","slide":5,"name":"footer","text":"DISPATCHHUB  /  JULY 2026","textPreview":"DISPATCHHUB  /  JULY 2026","textChars":25,"textLines":1,"bbox":[64,684,280,18]}
+{"kind":"textbox","id":"sh/x8vqpwru","slide":5,"name":"page","text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1180,682,36,18]}
+{"kind":"shape","id":"sh/c729wra9","slide":5,"name":"component-0","bbox":[64,258,204,190]}
+{"kind":"shape","id":"sh/v2xszq98","slide":5,"name":"box","bbox":[82,278,36,36]}
+{"kind":"textbox","id":"sh/u1or6l8n","slide":5,"name":"text","text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[82,282,36,24]}
+{"kind":"textbox","id":"sh/8ze9kb2x","slide":5,"name":"text","text":"Login","textPreview":"Login","textChars":5,"textLines":1,"bbox":[82,336,166,50]}
+{"kind":"textbox","id":"sh/t07adg3i","slide":5,"name":"text","text":"inject() declared first","textPreview":"inject() declared first","textChars":23,"textLines":1,"bbox":[82,398,166,22]}
+{"kind":"shape","id":"sh/6xwrilkr","slide":5,"name":"component-1","bbox":[292,258,204,190]}
+{"kind":"shape","id":"sh/7y5sb6lc","slide":5,"name":"box","bbox":[310,278,36,36]}
+{"kind":"textbox","id":"sh/kbe9gb21","slide":5,"name":"text","text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[310,282,36,24]}
+{"kind":"textbox","id":"sh/lcnq9g36","slide":5,"name":"text","text":"Registration","textPreview":"Registration","textChars":12,"textLines":1,"bbox":[310,336,166,50]}
+{"kind":"textbox","id":"sh/y9wre1kv","slide":5,"name":"text","text":"inject() declared first","textPreview":"inject() declared first","textChars":23,"textLines":1,"bbox":[310,398,166,22]}
+{"kind":"shape","id":"sh/ja5876lg","slide":5,"name":"component-2","bbox":[520,258,204,190]}
+{"kind":"shape","id":"sh/w7u9cr2p","slide":5,"name":"box","bbox":[538,278,36,36]}
+{"kind":"textbox","id":"sh/x83q5w3a","slide":5,"name":"text","text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[538,282,36,24]}
+{"kind":"textbox","id":"sh/dsvytor2","slide":5,"name":"text","text":"Dashboard","textPreview":"Dashboard","textChars":9,"textLines":1,"bbox":[538,336,166,50]}
+{"kind":"textbox","id":"sh/sr2xk3qh","slide":5,"name":"text","text":"inject() declared first","textPreview":"inject() declared first","textChars":23,"textLines":1,"bbox":[538,398,166,22]}
+{"kind":"shape","id":"sh/rqtgry9w","slide":5,"name":"component-3","bbox":[748,258,204,190]}
+{"kind":"shape","id":"sh/qpkfitsb","slide":5,"name":"box","bbox":[766,278,36,36]}
+{"kind":"textbox","id":"sh/5obyporq","slide":5,"name":"text","text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[766,282,36,24]}
+{"kind":"textbox","id":"sh/4n2xgja5","slide":5,"name":"text","text":"Main layout","textPreview":"Main layout","textChars":11,"textLines":1,"bbox":[766,336,166,50]}
+{"kind":"textbox","id":"sh/3mtgne9k","slide":5,"name":"text","text":"inject() declared first","textPreview":"inject() declared first","textChars":23,"textLines":1,"bbox":[766,398,166,22]}
+{"kind":"shape","id":"sh/ilkfe9sz","slide":5,"name":"component-4","bbox":[976,258,204,190]}
+{"kind":"shape","id":"sh/9kfy18ru","slide":5,"name":"box","bbox":[994,278,36,36]}
+{"kind":"textbox","id":"sh/oj6hsnqp","slide":5,"name":"text","text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[994,282,36,24]}
+{"kind":"textbox","id":"sh/6pgvm58r","slide":5,"name":"text","text":"Request ride","textPreview":"Request ride","textChars":12,"textLines":1,"bbox":[994,336,166,50]}
+{"kind":"textbox","id":"sh/7qpcvapc","slide":5,"name":"text","text":"inject() declared first","textPreview":"inject() declared first","textChars":23,"textLines":1,"bbox":[994,398,166,22]}
+{"kind":"shape","id":"sh/8rydofqx","slide":5,"name":"plain-language","bbox":[64,490,1140,86]}
+{"kind":"textbox","id":"sh/ts7exk7i","slide":5,"name":"text","text":"Newbie takeaway","textPreview":"Newbie takeaway","textChars":15,"textLines":1,"bbox":[88,516,190,26]}
+{"kind":"textbox","id":"sh/y1gvi58v","slide":5,"name":"text","text":"Angular can only use a service after it has been created. The fix changed the order — not the feature.","textPreview":"Angular can only use a service after it has been created. The fix changed the order — not the feature.","textChars":102,"textLines":1,"bbox":[296,513,860,34]}
+{"kind":"notes","id":"nt/c4c0jv","slide":5,"text":""}
+{"kind":"slide","id":"sl/edssab","slide":6,"title":"PROJECT TRANSFORMATION","textShapes":8}
+{"kind":"shape","id":"sh/e1cfix0j","slide":6,"name":"eyebrow-bg","bbox":[64,48,190,28]}
+{"kind":"textbox","id":"sh/143ytsza","slide":6,"name":"eyebrow","text":"PROJECT TRANSFORMATION","textPreview":"PROJECT TRANSFORMATION","textChars":22,"textLines":1,"bbox":[76,53,166,18]}
+{"kind":"textbox","id":"sh/g3uxknip","slide":6,"name":"slide-title","text":"The redesign created one product language across every role","textPreview":"The redesign created one product language across every role","textChars":59,"textLines":1,"bbox":[64,94,1110,62]}
+{"kind":"textbox","id":"sh/365gv2hg","slide":6,"name":"slide-subtitle","text":"Graphite establishes authority. Amber communicates action and movement. Content stays readable and calm.","textPreview":"Graphite establishes authority. Amber communicates action and movement. Content stays readable and calm.","textChars":104,"textLines":1,"bbox":[64,158,1050,48]}
+{"kind":"textbox","id":"sh/25wfmx0v","slide":6,"name":"footer","text":"DISPATCHHUB  /  JULY 2026","textPreview":"DISPATCHHUB  /  JULY 2026","textChars":25,"textLines":1,"bbox":[64,684,280,18]}
+{"kind":"textbox","id":"sh/psnyxcz6","slide":6,"name":"page","text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1180,682,36,18]}
+{"kind":"textbox","id":"sh/43yhw7ux","slide":6,"name":"text","text":"AUTHENTICATION","textPreview":"AUTHENTICATION","textChars":14,"textLines":1,"bbox":[82,558,250,20]}
+{"kind":"textbox","id":"sh/547i5cvi","slide":6,"name":"text","text":"DASHBOARD + ANALYTICS","textPreview":"DASHBOARD + ANALYTICS","textChars":21,"textLines":1,"bbox":[439,558,280,20]}
+{"kind":"textbox","id":"sh/i1wzuxwr","slide":6,"name":"text","text":"ROLE-AWARE NAVIGATION","textPreview":"ROLE-AWARE NAVIGATION","textChars":21,"textLines":1,"bbox":[846,558,280,20]}
+{"kind":"image","id":"im/pkzq98j6","slide":6,"name":"","geometry":"roundRect","alt":"DispatchHub product illustration","bbox":[64,240,338,300]}
+{"kind":"image","id":"im/ilkn29kb","slide":6,"name":"","geometry":"roundRect","alt":"DispatchHub product illustration","bbox":[421,240,388,300]}
+{"kind":"image","id":"im/jmdobelw","slide":6,"name":"","geometry":"roundRect","alt":"DispatchHub product illustration","bbox":[828,240,388,300]}
+{"kind":"notes","id":"nt/edssab","slide":6,"text":""}
+{"kind":"slide","id":"sl/t2t660","slide":7,"title":"PROJECT TRANSFORMATION","textShapes":14}
+{"kind":"shape","id":"sh/wzmx8zyp","slide":7,"name":"eyebrow-bg","bbox":[64,48,190,28]}
+{"kind":"textbox","id":"sh/bedwfux4","slide":7,"name":"eyebrow","text":"PROJECT TRANSFORMATION","textPreview":"PROJECT TRANSFORMATION","textChars":22,"textLines":1,"bbox":[76,53,166,18]}
+{"kind":"textbox","id":"sh/ad4f6pgj","slide":7,"name":"slide-title","text":"Trip management became clearer without changing behavior","textPreview":"Trip management became clearer without changing behavior","textChars":56,"textLines":1,"bbox":[64,94,1110,62]}
+{"kind":"textbox","id":"sh/9cvedkfy","slide":7,"name":"slide-subtitle","text":"Every visual improvement was layered over the existing routes, services, forms, and API bindings.","textPreview":"Every visual improvement was layered over the existing routes, services, forms, and API bindings.","textChars":97,"textLines":1,"bbox":[64,158,1050,48]}
+{"kind":"textbox","id":"sh/obmx4fyt","slide":7,"name":"footer","text":"DISPATCHHUB  /  JULY 2026","textPreview":"DISPATCHHUB  /  JULY 2026","textChars":25,"textLines":1,"bbox":[64,684,280,18]}
+{"kind":"textbox","id":"sh/nadwbax8","slide":7,"name":"page","text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1180,682,36,18]}
+{"kind":"shape","id":"sh/18ve9kf2","slide":7,"name":"box","bbox":[646,241,12,12]}
+{"kind":"textbox","id":"sh/072x0fyh","slide":7,"name":"text","text":"Admin operations","textPreview":"Admin operations","textChars":16,"textLines":1,"bbox":[680,236,250,28]}
+{"kind":"textbox","id":"sh/mdwnqlc3","slide":7,"name":"text","text":"Filtered trip ledger, status visibility, responsive table.","textPreview":"Filtered trip ledger, status visibility, responsive table.","textChars":58,"textLines":1,"bbox":[680,268,470,38]}
+{"kind":"shape","id":"sh/ne54jqdo","slide":7,"name":"box","bbox":[646,329,12,12]}
+{"kind":"textbox","id":"sh/8fe5svut","slide":7,"name":"text","text":"Trip detail","textPreview":"Trip detail","textChars":11,"textLines":1,"bbox":[680,324,250,28]}
+{"kind":"textbox","id":"sh/9g76l0ve","slide":7,"name":"text","text":"Route, assignment, fare, and timeline hierarchy.","textPreview":"Route, assignment, fare, and timeline hierarchy.","textChars":48,"textLines":1,"bbox":[680,356,470,38]}
+{"kind":"shape","id":"sh/ypwnm1wr","slide":7,"name":"box","bbox":[646,417,12,12]}
+{"kind":"textbox","id":"sh/zq54f6dc","slide":7,"name":"text","text":"Rider journey","textPreview":"Rider journey","textChars":13,"textLines":1,"bbox":[680,412,250,28]}
+{"kind":"textbox","id":"sh/0re5obux","slide":7,"name":"text","text":"Premium request form, estimate panel, and empty states.","textPreview":"Premium request form, estimate panel, and empty states.","textChars":55,"textLines":1,"bbox":[680,444,470,38]}
+{"kind":"shape","id":"sh/lcnmhgvi","slide":7,"name":"box","bbox":[646,505,12,12]}
+{"kind":"textbox","id":"sh/qlcni1wv","slide":7,"name":"text","text":"Accessibility","textPreview":"Accessibility","textChars":13,"textLines":1,"bbox":[680,500,250,28]}
+{"kind":"textbox","id":"sh/bml4b6dg","slide":7,"name":"text","text":"Focus states, contrast, keyboard paths, reduced motion.","textPreview":"Focus states, contrast, keyboard paths, reduced motion.","textChars":55,"textLines":1,"bbox":[680,532,470,38]}
+{"kind":"textbox","id":"sh/fq1kj2t8","slide":7,"name":"text","text":"ZERO BUSINESS-LOGIC CHANGES","textPreview":"ZERO BUSINESS-LOGIC CHANGES","textChars":27,"textLines":1,"bbox":[646,568,370,20]}
+{"kind":"image","id":"im/jel8v2d0","slide":7,"name":"","geometry":"roundRect","alt":"DispatchHub product illustration","bbox":[64,238,540,344]}
+{"kind":"notes","id":"nt/t2t660","slide":7,"text":""}
+{"kind":"slide","id":"sl/c9jyhz","slide":8,"title":"RESULT","textShapes":18}
+{"kind":"shape","id":"sh/vmxw7qd0","slide":8,"name":"eyebrow-bg","bbox":[64,58,78,28]}
+{"kind":"textbox","id":"sh/wn6x0vel","slide":8,"name":"eyebrow","text":"RESULT","textPreview":"RESULT","textChars":6,"textLines":1,"bbox":[76,63,54,18]}
+{"kind":"textbox","id":"sh/hofe90v6","slide":8,"name":"text","text":"Stable foundation.\nCoherent experience.\nClear story for judges.","textPreview":"Stable foundation. | Coherent experience. | Clear story for judges.","textChars":63,"textLines":3,"bbox":[64,116,610,216]}
+{"kind":"textbox","id":"sh/ip8f25wr","slide":8,"name":"text","text":"The work addressed the build blockers first, then improved the interface without expanding functional risk.","textPreview":"The work addressed the build blockers first, then improved the interface without expanding functional risk.","textChars":107,"textLines":1,"bbox":[64,364,540,74]}
+{"kind":"shape","id":"sh/jqhgbadw","slide":8,"name":"box","bbox":[682,104,240,188]}
+{"kind":"textbox","id":"sh/4rqx4feh","slide":8,"name":"text","text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[702,122,40,22]}
+{"kind":"textbox","id":"sh/5czydkv2","slide":8,"name":"text","text":"Compatibility","textPreview":"Compatibility","textChars":13,"textLines":1,"bbox":[702,168,195,30]}
+{"kind":"textbox","id":"sh/yt4fq1w7","slide":8,"name":"text","text":"Angular 20 + TypeScript aligned","textPreview":"Angular 20 + TypeScript aligned","textChars":31,"textLines":1,"bbox":[702,210,190,52]}
+{"kind":"shape","id":"sh/zudwz6ds","slide":8,"name":"box","bbox":[948,104,240,188]}
+{"kind":"textbox","id":"sh/vat83y9g","slide":8,"name":"text","text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[968,122,40,22]}
+{"kind":"textbox","id":"sh/a9k7ud8v","slide":8,"name":"text","text":"Correctness","textPreview":"Correctness","textChars":11,"textLines":1,"bbox":[968,168,195,30]}
+{"kind":"textbox","id":"sh/hwbq58rm","slide":8,"name":"text","text":"Five TS2729 causes removed","textPreview":"Five TS2729 causes removed","textChars":26,"textLines":1,"bbox":[968,210,190,52]}
+{"kind":"shape","id":"sh/wb2pw3q1","slide":8,"name":"box","bbox":[682,324,240,188]}
+{"kind":"textbox","id":"sh/n6t8zy9k","slide":8,"name":"text","text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[702,342,40,22]}
+{"kind":"textbox","id":"sh/m507qt8z","slide":8,"name":"text","text":"Consistency","textPreview":"Consistency","textChars":11,"textLines":1,"bbox":[702,388,195,30]}
+{"kind":"textbox","id":"sh/98bq18ra","slide":8,"name":"text","text":"One graphite/amber system","textPreview":"One graphite/amber system","textChars":25,"textLines":1,"bbox":[702,430,190,52]}
+{"kind":"shape","id":"sh/872ps3q5","slide":8,"name":"box","bbox":[948,324,240,188]}
+{"kind":"textbox","id":"sh/z298ve98","slide":8,"name":"text","text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[968,342,40,22]}
+{"kind":"textbox","id":"sh/y107mt8n","slide":8,"name":"text","text":"Discipline","textPreview":"Discipline","textChars":10,"textLines":1,"bbox":[968,388,195,30]}
+{"kind":"textbox","id":"sh/2dgry9cv","slide":8,"name":"text","text":"APIs and business logic preserved","textPreview":"APIs and business logic preserved","textChars":33,"textLines":1,"bbox":[968,430,190,52]}
+{"kind":"shape","id":"sh/3yp87et0","slide":8,"name":"closing","bbox":[64,506,540,64]}
+{"kind":"textbox","id":"sh/ozi90jul","slide":8,"name":"text","text":"Ready to demonstrate, explain, and extend.","textPreview":"Ready to demonstrate, explain, and extend.","textChars":42,"textLines":1,"bbox":[88,525,490,28]}
+{"kind":"textbox","id":"sh/p0rq9ob6","slide":8,"name":"footer","text":"DISPATCHHUB  /  JULY 2026","textPreview":"DISPATCHHUB  /  JULY 2026","textChars":25,"textLines":1,"bbox":[64,684,280,18]}
+{"kind":"textbox","id":"sh/q10r2tcr","slide":8,"name":"page","text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1180,682,36,18]}
+{"kind":"notes","id":"nt/c9jyhz","slide":8,"text":""}

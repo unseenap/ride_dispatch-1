@@ -1,247 +1,270 @@
-# DispatchHub — Ride Dispatch & Driver Matching System
+# DispatchHub
 
-A ride-hailing dispatch core inspired by Uber's trip lifecycle: riders
-request trips, the system matches available drivers, trip state moves
-through a defined lifecycle, fares are estimated server-side, and admins get
-an operations dashboard to monitor live trips and drivers.
+### Ride dispatch, driver matching, and trip operations — rebuilt with a clearer technical foundation and a premium enterprise interface.
 
-This is a **Round-2 hackathon challenge codebase**. Roughly 70% of the app is
-built and working end-to-end; the rest is intentionally incomplete or buggy
-for you to find, fix, and extend within the time box. Read this whole file
-before you start — it tells you what's already working, what's known to be
-broken, and what's missing outright.
+![DispatchHub trip-management illustration](frontend/public/assets/trips/trip-journey.png)
 
----
-
-## Table of contents
-
-- [Project Overview](#project-overview)
-- [Architecture](#architecture)
-- [Existing Features](#existing-features)
-- [Known Bugs](#known-bugs)
-- [Missing Features](#missing-features)
-- [Enhancement Opportunities](#enhancement-opportunities)
-- [Evaluation Criteria](#evaluation-criteria)
-- [Setup Instructions](#setup-instructions)
+> DispatchHub models the complete ride lifecycle for **riders**, **drivers**, and
+> **administrators**. This repository began as a partially completed Round-2
+> hackathon challenge containing intentional defects, missing features, and a
+> basic interface. Our work focused on removing the Angular initialization
+> blockers and creating one consistent graphite-and-amber product experience.
 
 ---
 
-## Project Overview
+## Project at a glance
 
-DispatchHub models three user roles:
+| Area | Technology |
+|---|---|
+| Frontend | Angular 20, standalone components, Angular Material, Signals, RxJS |
+| Backend | Java 21, Spring Boot 3.3, Spring Security, JWT, Spring Data JPA |
+| Database | PostgreSQL |
+| Architecture | Controller → Service → Repository → Entity |
+| User roles | Rider, Driver, Administrator |
+| Visual system | Graphite `#171717`, Amber `#FFB800`, warm neutral surfaces |
 
-- **RIDER** — requests trips, sees a live fare estimate, tracks trip status, rates drivers.
-- **DRIVER** — goes online/offline, accepts trip requests, moves a trip through its lifecycle.
-- **ADMIN** — monitors live trips and drivers from an ops dashboard, views analytics.
+### Core trip lifecycle
 
-A trip moves through: `REQUESTED → ACCEPTED → ARRIVED → IN_PROGRESS → COMPLETED`,
-with `CANCELLED` reachable from any non-terminal state.
+```text
+REQUESTED → ACCEPTED → ARRIVED → IN_PROGRESS → COMPLETED
+     └──────────────── CANCELLED ────────────────┘
+```
+
+- **Riders** request rides, review fare estimates, and track trip status.
+- **Drivers** manage availability and progress assigned trips.
+- **Administrators** monitor trips, drivers, statistics, and operational state.
+
+---
+
+## What we improved
+
+### 1. Removed five Angular initialization failures
+
+Five standalone components produced the TypeScript error:
+
+```text
+TS2729: Property is used before its initialization
+```
+
+The affected components were:
+
+1. Login
+2. Registration
+3. Dashboard
+4. Main layout
+5. Request ride
+
+#### What caused the error?
+
+The components created fields such as forms or signals using a service declared
+through a constructor parameter. TypeScript evaluated the field before that
+service was guaranteed to be initialized.
+
+```ts
+// Before: the form may run before fb is ready.
+constructor(private fb: FormBuilder) {}
+
+readonly form = this.fb.group({
+  email: [''],
+  password: ['']
+});
+```
+
+#### How we fixed it
+
+Dependencies are now declared with Angular's `inject()` API before any field
+that uses them.
+
+```ts
+// After: the dependency exists before the form is created.
+private readonly fb = inject(FormBuilder);
+
+readonly form = this.fb.group({
+  email: [''],
+  password: ['']
+});
+```
+
+This preserves the original behavior while making the initialization order
+explicit and safe.
+
+### 2. Diagnosed the Angular and TypeScript compatibility problem
+
+The Angular 20.3 build toolchain expects a TypeScript release in its supported
+range, while this checkout currently pins TypeScript `~5.6.0`.
+
+```text
+Angular build tools 20.3.x
+          ↓ require
+TypeScript >= 5.8.0 and < 6.0.0
+```
+
+Before performing a clean frontend installation, align the TypeScript pin with
+the installed Angular toolchain and regenerate the lockfile. Do not solve this
+error by suppressing compiler checks—the dependency versions must agree.
+
+### 3. Unified the entire frontend experience
+
+The application already contained working routes and backend integrations. We
+redesigned only the presentation layer and kept the existing behavior intact.
+
+| Experience | Improvements |
+|---|---|
+| Authentication | Premium split layouts, original route artwork, stronger hierarchy, responsive forms |
+| Navigation | Role-aware graphite sidebar, amber active states, live-system indicators, mobile navigation |
+| Dashboard | Clear statistics hierarchy, command-center illustration, improved loading and empty states |
+| Trip management | Operations ledger, filters, route-focused detail view, timeline, responsive status system |
+| Ride request | Polished route form, fare-summary panel, submission and validation states |
+| Account toolbar | Correct avatar/name alignment, unclipped role label, responsive account control |
+
+---
+
+## Visual transformation
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="frontend/public/assets/auth/dispatch-route-illustration.png" alt="DispatchHub authentication route illustration" />
+      <br /><strong>Authentication</strong><br />A welcoming entry point for riders, drivers, and administrators.
+    </td>
+    <td width="50%">
+      <img src="frontend/public/assets/dashboard/dispatch-command-center.png" alt="DispatchHub command center illustration" />
+      <br /><strong>Dashboard</strong><br />A focused operations surface for live application statistics.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="frontend/public/assets/navigation/route-network.png" alt="DispatchHub route network illustration" />
+      <br /><strong>Navigation</strong><br />Role-aware wayfinding with clear state and system feedback.
+    </td>
+    <td width="50%">
+      <img src="frontend/public/assets/trips/trip-journey.png" alt="DispatchHub trip journey illustration" />
+      <br /><strong>Trip management</strong><br />A consistent journey language from request to completion.
+    </td>
+  </tr>
+</table>
+
+### Design principles
+
+- **One accent:** amber highlights actions, routes, and active states.
+- **Strong hierarchy:** graphite creates dependable enterprise contrast.
+- **Responsive by default:** layouts adapt across mobile, tablet, and desktop.
+- **Accessible interaction:** visible focus states, keyboard-friendly controls,
+  semantic labels, and reduced-motion fallbacks.
+- **Purposeful animation:** entrance, hover, skeleton, timeline, and status motion
+  support understanding without distracting the user.
+- **Original imagery:** project illustrations were generated specifically for
+  DispatchHub and contain no third-party brand assets.
+
+---
+
+## Scope guardrails we maintained
+
+The UI modernization intentionally did **not** change:
+
+- Backend services or business rules
+- REST API contracts
+- Routing behavior
+- Form submission logic
+- Existing validation rules
+- Authentication or JWT integration
+- Database integration
+
+Angular Material remains the component foundation. The new visual language is
+implemented through semantic HTML, modular SCSS, and native CSS animation.
 
 ---
 
 ## Architecture
 
-### Backend
-
-- **Java 21**, **Spring Boot 3.3.x**, Maven.
-- **Spring Security** with stateless **JWT** auth (`Authorization: Bearer <token>`).
-- **Spring Data JPA** + **PostgreSQL**, layered `Controller → Service → Repository → Entity`.
-- DTOs at every controller boundary — entities are never serialized directly.
-- Bean Validation (`@NotNull`, `@Size`, `@Pattern`, etc.) on request DTOs.
-- `@RestControllerAdvice` global exception handler with a consistent error shape.
-- Pagination via Spring Data `Pageable` on trip and driver list endpoints.
-
-### Frontend
-
-- **Angular 20+**, fully **standalone components** (no `NgModule`s).
-- **Angular Material** for UI (`mat-sidenav`, `mat-toolbar`, `mat-table`, etc.).
-- **RxJS** + `HttpClient` in a dedicated services layer (`core/services`).
-- **Angular Signals** for current-user auth state and for the polled live
-  trip status on the trip detail page.
-- Functional route guards (`CanActivateFn`) for auth and role-based routing.
-- An `HttpInterceptorFn` attaches the JWT to outgoing API requests.
-
-### Database
-
-PostgreSQL. See [`docs/DATABASE-SCHEMA.sql`](docs/DATABASE-SCHEMA.sql) for
-`CREATE TABLE` statements and [`docs/ER-DIAGRAM.md`](docs/ER-DIAGRAM.md) for
-the entity-relationship diagram. Core tables: `users`, `driver_profiles`,
-`rider_profiles`, `trips`, `trip_status_history`, `reviews`.
-
-### API Flow
-
-1. Client calls `POST /api/auth/login` (or `/register`) → receives a JWT.
-2. Every subsequent request carries `Authorization: Bearer <token>`.
-3. `JwtAuthenticationFilter` validates the token and populates the Spring
-   Security context with a `UserPrincipal` (id, email, role).
-4. Controllers use `@PreAuthorize` (method-level) plus the `SecurityConfig`
-   filter chain (URL-level) for role checks, and pull the current user via
-   the `CurrentUser` helper bean.
-5. Full endpoint reference: [`docs/API-DOCUMENTATION.md`](docs/API-DOCUMENTATION.md).
-
-### Folder Structure
-
-Full annotated tree: [`docs/FOLDER-STRUCTURE.md`](docs/FOLDER-STRUCTURE.md).
-
-```
-ride-dispatch/
-├── backend/            Spring Boot API (Maven)
-├── frontend/            Angular 20 SPA
-├── docs/                 ER diagram, API docs, schema, folder structure
-├── postman/              Postman collection
-├── seed-data/            Raw SQL seed data
-├── README.md              You are here
-└── JUDGE-SOLUTION-GUIDE.md   Judges only - not meant for candidates
+```text
+Angular SPA
+   │
+   │  HTTP + JWT
+   ▼
+Spring Boot REST API
+   │
+   ├── Controller
+   ├── Service
+   ├── Repository
+   └── Entity / DTO
+          │
+          ▼
+      PostgreSQL
 ```
 
----
+### Repository structure
 
-## Existing Features
+```text
+ride_dispatch/
+├── backend/                 Spring Boot API
+├── frontend/                Angular application
+│   └── public/assets/       DispatchHub illustrations
+├── docs/                    API, schema, ERD, and structure documentation
+├── seed-data/               Development seed data
+├── outputs/                 Project presentation
+├── AGENTS.md                Engineering tracker and working context
+└── README.md                Project overview
+```
 
-**Backend**
-- JWT auth: register + login, working end to end, token expiry enforced.
-- Role-based access control via Spring Security (`RIDER` / `DRIVER` / `ADMIN`).
-- Full CRUD-equivalent flows for Trip, DriverProfile, RiderProfile.
-- Trip lifecycle endpoints: request, accept, arrive, start, complete, cancel.
-- Fare estimation endpoint (base fare + per-km rate + per-minute rate).
-- Driver availability toggle (go online/offline) and location update.
-- Paginated trip list and driver list endpoints.
-- Admin dashboard stats endpoint and a trips-per-driver analytics endpoint.
-- Global exception handling with a consistent JSON error shape.
-- `DataLoader` (`CommandLineRunner`) seeds realistic dev data on first boot.
+Detailed references:
 
-**Frontend**
-- Login / register pages wired to the real backend, JWT stored client-side.
-- Role-based functional route guards (`authGuard`, `guestGuard`, `roleGuard`).
-- Main layout: `mat-sidenav` + `mat-toolbar`, nav links driven by role.
-- Admin dashboard with live stat cards pulled from the backend.
-- Trips list (admin): paginated Material table with a status filter.
-- Trip detail page: trip info + status timeline, polled on an interval and
-  held in an Angular Signal.
-- Driver management page (admin): paginated Material table of drivers.
-- "Request a ride" form with a fare estimate preview panel.
-- `AuthService` / `TripService` / `DriverService` / `RiderService` /
-  `DashboardService`, all typed against models matching the backend DTOs.
-
-
-
-## Missing Features
-
-These are not implemented. Where a stub exists, it's marked with a `TODO`
-comment and typically throws `UnsupportedOperationException` (mapped to
-`501 Not Implemented`) or is a placeholder UI shell.
-
-- **Backend**: "Nearby available drivers" query given a rider's lat/lng —
-  `DriverService.findNearbyAvailableDrivers` is a stub; `GET /api/drivers/nearby`
-  currently 501s.
-- **Backend**: Driver rating/review submission after trip completion — the
-  `Review` entity and repository exist, `ReviewService.submitReview` is a
-  stub, `POST /api/trips/{id}/review` currently 501s.
-- **Backend**: Admin "force-cancel / reassign a stuck trip" recovery
-  endpoint — not implemented at all (`POST /api/admin/trips/{id}/force-cancel`
-  501s).
-- **Frontend**: Driver-facing "incoming trip request" page — routed and
-  present as a placeholder shell (`IncomingRequestComponent`), no actual
-  polling/data wired up.
-- **Frontend**: Rider trip history page — routed and present as a
-  placeholder shell (`TripHistoryComponent`); `TripService.getMyTrips` and
-  the backing `GET /api/trips/my` endpoint already work, this page just
-  doesn't call it yet.
-- **Frontend**: The fare estimate reactivity bug under Known Bugs (#6) is
-  also a feature-completion task — the preview should genuinely update as
-  the rider edits the form.
+- [API documentation](docs/API-DOCUMENTATION.md)
+- [Database schema](docs/DATABASE-SCHEMA.sql)
+- [Entity relationship diagram](docs/ER-DIAGRAM.md)
+- [Folder structure](docs/FOLDER-STRUCTURE.md)
+- [Engineering tracker](AGENTS.md)
+- [Project transformation presentation](outputs/DispatchHub_UI_and_Error_Fixes.pptx)
 
 ---
 
-## Enhancement Opportunities
-
-Not required, but fair game if you have time left and want to stand out:
-
-- Rate limiting on `POST /api/trips` to prevent request spam (not implemented anywhere).
-- Real-time trip updates via WebSocket/SSE instead of interval polling
-  (there's a TODO left in `TripDetailComponent` marking where this would plug in).
-- Geocoding integration so "Request a ride" takes real addresses instead of
-  fixed placeholder coordinates.
-- Driver earnings/payout view.
-- Surge pricing based on real-time supply/demand instead of a static multiplier.
-- Refresh tokens instead of a single long-lived JWT.
-- Integration/contract tests for the trip state machine.
-- Dockerizing backend + frontend + Postgres for one-command local startup.
-
----
-
-## Evaluation Criteria
-
-You'll be assessed on:
-
-- **Correctness** — do your fixes actually fix the underlying bug, not just
-  hide the symptom?
-- **Code quality** — does your code fit the existing architecture and
-  conventions, or does it look bolted on?
-- **Completeness** — how many of the missing features / bugs did you get to
-  in the time available, and how well?
-- **UI/UX judgment** — for frontend work, does it look and feel consistent
-  with the rest of the app?
-- **Testing/verification** — did you check your fix actually works (manual
-  testing is fine; automated tests are a bonus)?
-- **Communication** — clear commit messages / PR description of what you
-  changed and why.
-
-You are not expected to finish everything. Prioritize.
-
----
-
-## Setup Instructions
+## Getting started
 
 ### Prerequisites
 
-- Java 21 (JDK)
-- Maven 3.9+ (or use your IDE's bundled Maven)
-- Node.js 20+ and npm 10+
-- PostgreSQL 15+ running locally (or via Docker)
-- Angular CLI 20+ (`npm install -g @angular/cli`) — optional, `npx ng` also works
+- Java 21
+- Maven 3.9+
+- Node.js 20+
+- npm 10+
+- PostgreSQL 15+
 
-### Database
+### 1. Clone the repository
 
-1. Create the database and a role:
-   ```sql
-   CREATE DATABASE dispatchhub;
-   CREATE USER dispatchhub WITH PASSWORD 'dispatchhub';
-   GRANT ALL PRIVILEGES ON DATABASE dispatchhub TO dispatchhub;
-   ```
-2. Apply the schema:
-   ```bash
-   psql -U dispatchhub -d dispatchhub -f docs/DATABASE-SCHEMA.sql
-   ```
-3. (Optional) Load seed data directly via SQL instead of relying on the
-   backend's `DataLoader`:
-   ```bash
-   psql -U dispatchhub -d dispatchhub -f seed-data/seed.sql
-   ```
-   Note: if you run the backend against an **empty** database, `DataLoader`
-   seeds its own dev dataset automatically on first boot — you don't need to
-   run both. Use `seed-data/seed.sql` if you want the exact dataset described
-   in this repo's docs (it includes an ACCEPTED trip and a second historical
-   COMPLETED trip that `DataLoader` doesn't create), or if you're loading
-   data outside of the Spring Boot app entirely.
+```bash
+git clone https://github.com/CredxColab/ride_dispatch.git
+cd ride_dispatch
+```
 
-### Environment Variables
+### 2. Create the PostgreSQL database
 
-Copy the example env file and adjust as needed:
+```sql
+CREATE DATABASE dispatchhub;
+CREATE USER dispatchhub WITH PASSWORD 'dispatchhub';
+GRANT ALL PRIVILEGES ON DATABASE dispatchhub TO dispatchhub;
+```
+
+PostgreSQL 15 and later may also require:
+
+```sql
+\c dispatchhub
+GRANT ALL ON SCHEMA public TO dispatchhub;
+```
+
+Apply the supplied schema if required:
+
+```bash
+psql -U dispatchhub -d dispatchhub -f docs/DATABASE-SCHEMA.sql
+```
+
+### 3. Configure the backend
+
+Copy the example environment file:
 
 ```bash
 cp backend/application-example.env backend/.env
 ```
 
-| Variable | Description | Default |
-|---|---|---|
-| `DB_URL` | JDBC URL | `jdbc:postgresql://localhost:5432/dispatchhub` |
-| `DB_USERNAME` | DB user | `dispatchhub` |
-| `DB_PASSWORD` | DB password | `dispatchhub` |
-| `JWT_SECRET` | Base64-encoded HMAC-SHA256 key | (dev-only value in the example file) |
-| `JWT_EXPIRATION_MS` | Token lifetime in ms | `86400000` (24h) |
-| `JWT_ISSUER` | `iss` claim value | `dispatchhub-api` |
-| `CORS_ALLOWED_ORIGINS` | Comma-separated allowed origins | `http://localhost:4200` |
+Important environment variables:
 
 `application.yml` reads these via `${VAR}` placeholders. Database, CORS, and
 expiry settings have local-dev defaults, but **`JWT_SECRET` has no default in
@@ -250,7 +273,9 @@ so a deployment can never accidentally run with a publicly-known signing key.
 For local development, activate the `dev` profile (see below), which supplies
 a dev-only secret and verbose SQL/DEBUG logging.
 
-### Backend
+Use a strong environment-specific `JWT_SECRET` outside local development.
+
+### 4. Start the backend
 
 For local development (dev-only JWT secret + SQL/DEBUG logging enabled):
 
@@ -265,10 +290,10 @@ as a real environment variable and start without the dev profile.
 The API starts on `http://localhost:8080`. Health check:
 `GET http://localhost:8080/actuator/health`.
 
-To build a jar:
-```bash
-mvn clean package
-java -jar target/dispatchhub-0.1.0.jar
+Health check:
+
+```text
+GET http://localhost:8080/actuator/health
 ```
 
 To run the tests (trip state machine integration tests; they use an
@@ -285,17 +310,87 @@ npm install
 npm start
 ```
 
-The app starts on `http://localhost:4200` and expects the backend at
-`http://localhost:8080/api` (see `src/environments/environment.ts`).
+Open `http://localhost:4200`.
 
-### Running locally (full stack)
+### Useful commands
 
-1. Start PostgreSQL, create/seed the `dispatchhub` database (see above).
-2. `cd backend && mvn spring-boot:run` (leave running).
-3. `cd frontend && npm install && npm start` (leave running).
-4. Visit `http://localhost:4200`, register a new account or log in with a
-   seeded user (see `seed-data/seed.sql` — all seeded users share the
-   password `Password123!`, e.g. `admin@dispatchhub.com` / `Password123!`).
+```bash
+# Frontend development server
+npm start
+
+# Frontend production build
+npm run build
+
+# Frontend tests
+npm test
+
+# Backend tests/package
+mvn clean package
+```
+
+---
+
+## Features currently available
+
+### Backend
+
+- JWT registration and login
+- Role-based authorization
+- Trip request and lifecycle operations
+- Fare estimation
+- Driver availability and location updates
+- Paginated trip and driver endpoints
+- Dashboard statistics and driver analytics
+- Consistent global API error responses
+- Development data seeding
+
+### Frontend
+
+- Login and registration connected to the backend
+- Authentication, guest, and role guards
+- Role-aware application navigation
+- Administrator statistics dashboard
+- Paginated and filtered trip ledger
+- Trip detail and status timeline
+- Driver management table
+- Ride-request form and fare preview surface
+
+---
+
+## Known incomplete work
+
+The repository is still a challenge codebase. A beautiful interface does not
+mean every business feature is complete.
+
+- Rider trip history still displays a presentation-only placeholder.
+- Driver incoming requests still use a placeholder screen.
+- Nearby-driver search is not implemented and returns `501`.
+- Driver review submission is not implemented and returns `501`.
+- Administrator force-cancel/reassignment is not implemented.
+- Fare estimates still use placeholder coordinates rather than geocoding.
+- Trip detail uses interval polling rather than WebSocket or SSE updates.
+
+Security and correctness findings—including trip authorization, cancellation
+ownership, public administrator registration, unsafe production defaults, race
+conditions, and fare validation—are documented in [AGENTS.md](AGENTS.md). They
+should be addressed before a production deployment.
+
+---
+
+## Verification philosophy
+
+Every change should be evaluated against the original hackathon criteria:
+
+1. **Correctness** — fix the underlying cause, not only the visible symptom.
+2. **Code quality** — follow the existing Angular and Spring architecture.
+3. **Completeness** — clearly distinguish finished work from placeholders.
+4. **UI/UX judgment** — maintain one coherent product language.
+5. **Verification** — build, test, and manually inspect the affected flow.
+6. **Communication** — explain each fix in language a teammate can repeat.
+
+---
+
+## Project story in one sentence
 
 ### Running with Docker (one command)
 
