@@ -95,7 +95,7 @@ public class TripController {
     @PostMapping("/{id}/complete")
     @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<TripResponse> completeTrip(@PathVariable Long id,
-                                                       @RequestBody(required = false) CompleteTripRequest request) {
+                                                       @Valid @RequestBody(required = false) CompleteTripRequest request) {
         return ResponseEntity.ok(tripService.completeTrip(id, currentUser.id(), request));
     }
 
