@@ -253,8 +253,16 @@ Request:
 { "rating": 5, "comment": "Smooth ride, very punctual driver." }
 ```
 
-**Current status**: not implemented. Returns `501 Not Implemented` — see
-Known Bugs / Missing Features in the root README.
+`rating` is required (1–5); `comment` is optional (max 1000 chars).
+
+Response `201 Created`:
+```json
+{ "id": 1, "tripId": 4, "driverId": 2, "rating": 5, "comment": "Smooth ride, very punctual driver.", "createdAt": "2026-07-20T12:00:00Z" }
+```
+
+Errors: `403` if the trip belongs to another rider, `409` if the trip is not
+`COMPLETED` or has already been reviewed, `404` if the trip doesn't exist.
+Submitting a review recomputes the driver's average rating.
 
 ---
 
