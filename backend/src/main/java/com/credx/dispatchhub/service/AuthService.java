@@ -32,6 +32,10 @@ public class AuthService {
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
+        if (request.role() != UserRole.RIDER && request.role() != UserRole.DRIVER) {
+            throw new IllegalArgumentException("Public registration is only available for rider and driver accounts");
+        }
+
         if (userRepository.existsByEmail(request.email())) {
             throw new DuplicateResourceException("An account with this email already exists");
         }
