@@ -332,10 +332,12 @@ Request:
 ### `GET /api/drivers/nearby`
 **Auth**: any authenticated user
 
-Query params: `lat`, `lng`, `radiusKm` (default `5`).
+Query params: `lat`, `lng`, `radiusKm` (default `5`, max `50`).
 
-**Current status**: not implemented. Returns `501 Not Implemented` — see
-Missing Features in the root README.
+Returns `AVAILABLE` drivers with a known location within `radiusKm` of the
+given point, sorted nearest-first, capped at 20 results. Response is a JSON
+array of driver profile objects (same shape as `GET /api/drivers/{id}`).
+An out-of-range `radiusKm` returns `400 Bad Request`.
 
 ---
 

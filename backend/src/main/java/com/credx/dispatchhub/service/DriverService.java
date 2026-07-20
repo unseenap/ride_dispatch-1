@@ -8,6 +8,7 @@ import com.credx.dispatchhub.entity.DriverProfile;
 import com.credx.dispatchhub.enums.DriverStatus;
 import com.credx.dispatchhub.exception.ResourceNotFoundException;
 import com.credx.dispatchhub.repository.DriverProfileRepository;
+import com.credx.dispatchhub.util.GeoUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,10 +16,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class DriverService {
+
+    private static final double KM_PER_DEGREE_LAT = 111.0;
+    private static final double MAX_SEARCH_RADIUS_KM = 50.0;
+    private static final int MAX_NEARBY_RESULTS = 20;
 
     private final DriverProfileRepository driverProfileRepository;
 
@@ -85,14 +91,28 @@ public class DriverService {
     }
 
     /**
-     * TODO: implement real "nearby available drivers" search.
-     * Intended approach: bounding-box pre-filter on currentLat/currentLng using
-     * the requested radiusKm, then a precise haversine distance check (see
-     * GeoUtils#distanceKm) to filter/sort candidates, capped to a reasonable
-     * result size. Not wired to any controller endpoint yet.
+     * Nearby available drivers: bounding-box pre-filter in the database, then
+     * a precise haversine distance check, sorted nearest-first and capped.
      */
+    @Transactional(readOnly = true)
     public List<DriverProfileResponse> findNearbyAvailableDrivers(double lat, double lng, double radiusKm) {
-        throw new UnsupportedOperationException("Nearby driver search is not implemented yet");
+        if (radiusKm <= 0 || radiusKm > MAX_SEARCH_RADIUS_KM) {
+            throw new IllegalArgumentException("radiusKm must be between 0 and " + MAX_SEARCH_RADIUS_KM);
+        }
+
+        // 1 degree of latitude is ~111 km; longitude degrees shrink by cos(lat).
+        double latDelta = radiusKm / KM_PER_DEGREE_LAT;
+        double lngDelta = radiusKm / (KM_PER_DEGREE_LAT * Math.max(Math.cos(Math.toRadians(lat)), 0.01));
+
+        return driverProfileRepository.findAvailableWithinBoundingBox(
+                        lat - latDelta, lat + latDelta, lng - lngDelta, lng + lngDelta)
+                .stream()
+                .map(d -> Map.entry(d, GeoUtils.distanceKm(lat, lng, d.getCurrentLat(), d.getCurrentLng())))
+                .filter(e -> e.getValue() <= radiusKm)
+                .sorted(Map.Entry.comparingByValue())
+                .limit(MAX_NEARBY_RESULTS)
+                .map(e -> toResponse(e.getKey()))
+                .toList();
     }
 
     private DriverProfileResponse toResponse(DriverProfile driver) {
