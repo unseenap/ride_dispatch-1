@@ -123,52 +123,7 @@ ride-dispatch/
 - `AuthService` / `TripService` / `DriverService` / `RiderService` /
   `DashboardService`, all typed against models matching the backend DTOs.
 
----
 
-## Known Bugs
-
-These are real, present in the code as shipped. They are not marked with
-inline "BUG" comments — finding them is part of the exercise. This list
-tells you *what's wrong*, not *how to fix it*.
-
-1. **Fare estimates are wrong for anything but very short trips.** The
-   distance calculation behind fare estimation produces numbers that look
-   plausible for a couple of km and increasingly nonsensical the longer the
-   trip gets.
-2. **The trips list (and similar list endpoints) issue far more SQL queries
-   than they should.** Turn on SQL logging and request a page of trips —
-   count the statements.
-3. **Two riders can end up matched to the same driver.** The "accept trip"
-   flow doesn't fully protect against a driver being assigned twice under
-   concurrent requests, even though the schema has what it needs to prevent
-   this.
-4. **A rider can view or cancel a trip that isn't theirs.** At least one
-   trip endpoint checks that the trip exists but not that the caller is
-   actually party to it.
-5. **A validation rule is too strict (or too loose) somewhere in the DTOs.**
-   One example: a field that should reject invalid input silently accepts
-   something it shouldn't, or rejects input a real user would reasonably
-   type.
-6. **The "Request a ride" fare preview doesn't behave like a live preview.**
-   Edit the pickup or dropoff field after the page loads and see what
-   actually happens to the estimate — and what happens if you submit with a
-   field the UI didn't require but the API does.
-7. **At least one list page shows nothing while data is loading** — no
-   spinner, no skeleton, just an empty table until the response lands.
-8. **At least one page has visual inconsistencies** relative to the rest of
-   the app — spacing, or a table with no empty-state messaging.
-9. **One of the admin analytics endpoints does more work than it needs to.**
-   It'll be fine against the seed data and slow to think about at real scale.
-10. **There's dead weight in the codebase**: something marked `@Deprecated`
-    that's still called from somewhere, a component that exists but is never
-    routed to, and a helper that's been written twice, slightly differently,
-    in two different files.
-
-There is also one gap in the role-based access rules themselves (not just
-application logic) — read `SecurityConfig` carefully alongside the trip
-endpoints.
-
----
 
 ## Missing Features
 
@@ -328,9 +283,3 @@ The app starts on `http://localhost:4200` and expects the backend at
    seeded user (see `seed-data/seed.sql` — all seeded users share the
    password `Password123!`, e.g. `admin@dispatchhub.com` / `Password123!`).
 
-### Postman
-
-Import [`postman/DispatchHub.postman_collection.json`](postman/DispatchHub.postman_collection.json).
-Set the `baseUrl` collection variable (defaults to `http://localhost:8080/api`),
-then run one of the `Auth / Login (...)` requests — its test script
-auto-populates the `token` collection variable for every subsequent request.
