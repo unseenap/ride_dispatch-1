@@ -271,6 +271,12 @@ mvn clean package
 java -jar target/dispatchhub-0.1.0.jar
 ```
 
+To run the tests (trip state machine integration tests; they use an
+in-memory H2 database, no Postgres needed):
+```bash
+mvn test
+```
+
 ### Frontend
 
 ```bash
