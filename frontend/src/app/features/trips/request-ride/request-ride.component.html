@@ -1,51 +1,98 @@
-<div class="dh-page">
-  <div class="dh-page-header">
-    <h1>Request a ride</h1>
-  </div>
+<div class="dh-page request-page">
+  <header class="request-header">
+    <div>
+      <span class="header-kicker">New journey</span>
+      <h1>Request a ride</h1>
+      <p>Enter your route, review the estimate, and send the request to nearby drivers.</p>
+    </div>
+    <div class="header-illustration" aria-hidden="true">
+      <img src="/assets/trips/trip-journey.png" alt="" />
+    </div>
+  </header>
 
   <div class="request-grid">
-    <mat-card class="form-card">
-      <form [formGroup]="form" (ngSubmit)="submit()">
-        <mat-form-field appearance="outline" class="dh-full-width">
-          <mat-label>Pickup address</mat-label>
-          <input matInput formControlName="pickupAddress" placeholder="1 Market St, San Francisco, CA" />
-          <mat-icon matPrefix>my_location</mat-icon>
-          @if (form.controls.pickupAddress.hasError('required') && form.controls.pickupAddress.touched) {
-            <mat-error>Pickup address is required</mat-error>
-          }
-        </mat-form-field>
+    <section class="form-card" aria-labelledby="route-heading">
+      <div class="section-heading">
+        <span class="step-icon" aria-hidden="true"><mat-icon>route</mat-icon></span>
+        <div>
+          <h2 id="route-heading">Plan your route</h2>
+          <p>Choose where the trip starts and ends.</p>
+        </div>
+      </div>
 
-        <mat-form-field appearance="outline" class="dh-full-width">
-          <mat-label>Dropoff address</mat-label>
-          <input matInput formControlName="dropoffAddress" placeholder="Ferry Building, San Francisco, CA" />
-          <mat-icon matPrefix>flag</mat-icon>
-        </mat-form-field>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="route-inputs">
+          <span class="route-connector" aria-hidden="true"></span>
+          <mat-form-field appearance="outline" class="dh-full-width">
+            <mat-label>Pickup address</mat-label>
+            <input matInput formControlName="pickupAddress" placeholder="1 Market St, San Francisco, CA" autocomplete="street-address" />
+            <mat-icon matPrefix>my_location</mat-icon>
+            @if (form.controls.pickupAddress.hasError('required') && form.controls.pickupAddress.touched) {
+              <mat-error>Pickup address is required</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="dh-full-width">
+            <mat-label>Dropoff address</mat-label>
+            <input matInput formControlName="dropoffAddress" placeholder="Ferry Building, San Francisco, CA" autocomplete="street-address" />
+            <mat-icon matPrefix>flag</mat-icon>
+          </mat-form-field>
+        </div>
 
         @if (submitError()) {
-          <p class="error-text">{{ submitError() }}</p>
+          <div class="error-message" role="alert">
+            <mat-icon aria-hidden="true">error_outline</mat-icon>
+            <span>{{ submitError() }}</span>
+          </div>
         }
 
         <button mat-flat-button color="primary" type="submit" class="dh-full-width submit-btn" [disabled]="submitting()">
           @if (submitting()) {
-            <mat-spinner diameter="20"></mat-spinner>
+            <span class="button-content">
+              <mat-spinner diameter="20"></mat-spinner>
+              <span>Sending request</span>
+            </span>
           } @else {
-            <span>Request ride</span>
+            <span class="button-content">
+              <mat-icon aria-hidden="true">local_taxi</mat-icon>
+              <span>Request ride</span>
+            </span>
           }
         </button>
       </form>
-    </mat-card>
+    </section>
 
-    <mat-card class="fare-card">
-      <h2>Fare estimate</h2>
+    <aside class="fare-card" aria-labelledby="fare-heading">
+      <div class="fare-card__header">
+        <div>
+          <span>Trip estimate</span>
+          <h2 id="fare-heading">Fare summary</h2>
+        </div>
+        <mat-icon aria-hidden="true">receipt_long</mat-icon>
+      </div>
+
       @if (fareEstimate(); as estimate) {
-        <div class="fare-amount">${{ estimate.estimatedFare.toFixed(2) }}</div>
-        <p class="fare-meta">{{ estimate.distanceKm.toFixed(1) }} km &middot; ~{{ estimate.estimatedDurationMinutes.toFixed(0) }} min</p>
+        <div class="fare-amount">
+          <span>Estimated total</span>
+          <strong>${{ estimate.estimatedFare.toFixed(2) }}</strong>
+        </div>
+        <div class="fare-meta">
+          <div><mat-icon aria-hidden="true">route</mat-icon><span><strong>{{ estimate.distanceKm.toFixed(1) }} km</strong>Distance</span></div>
+          <div><mat-icon aria-hidden="true">schedule</mat-icon><span><strong>~{{ estimate.estimatedDurationMinutes.toFixed(0) }} min</strong>Duration</span></div>
+        </div>
       } @else {
-        <div class="dh-loading-state">
-          <mat-spinner diameter="28"></mat-spinner>
+        <div class="estimate-skeleton" aria-live="polite" aria-busy="true">
+          <span class="skeleton skeleton-label"></span>
+          <span class="skeleton skeleton-value"></span>
+          <div><span class="skeleton skeleton-meta"></span><span class="skeleton skeleton-meta"></span></div>
+          <span class="sr-only">Calculating fare estimate</span>
         </div>
       }
-      <p class="fare-disclaimer">Final fare may vary based on route, traffic, and wait time.</p>
-    </mat-card>
+
+      <div class="fare-note">
+        <mat-icon aria-hidden="true">info</mat-icon>
+        <p>Final fare may change with route conditions, traffic, and wait time.</p>
+      </div>
+    </aside>
   </div>
 </div>

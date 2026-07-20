@@ -1,80 +1,115 @@
-<div class="dh-page">
-  <div class="dh-page-header">
-    <h1>Trips</h1>
-    <mat-form-field appearance="outline" class="status-filter">
-      <mat-label>Filter by status</mat-label>
-      <mat-select [value]="selectedStatus()" (selectionChange)="onStatusFilterChange($event.value)">
-        <mat-option [value]="null">All statuses</mat-option>
-        @for (status of statuses; track status) {
-          <mat-option [value]="status">{{ status }}</mat-option>
+<div class="dh-page trips-page">
+  <header class="trips-header">
+    <div class="header-copy">
+      <span class="header-kicker">Trip management</span>
+      <h1>All trips</h1>
+      <p>Review every ride request, assignment, and completion across the dispatch network.</p>
+    </div>
+
+    <div class="header-summary" aria-label="Trip result summary">
+      <span class="header-summary__value">{{ totalElements() }}</span>
+      <span class="header-summary__label">Trips in current view</span>
+    </div>
+  </header>
+
+  <section class="table-section" aria-labelledby="trip-table-heading">
+    <div class="table-toolbar">
+      <div>
+        <h2 id="trip-table-heading">Dispatch ledger</h2>
+        <p>Latest requests and their current assignment status</p>
+      </div>
+
+      <mat-form-field appearance="outline" class="status-filter" subscriptSizing="dynamic">
+        <mat-label>Filter by status</mat-label>
+        <mat-icon matPrefix>filter_list</mat-icon>
+        <mat-select [value]="selectedStatus()" (selectionChange)="onStatusFilterChange($event.value)">
+          <mat-option [value]="null">All statuses</mat-option>
+          @for (status of statuses; track status) {
+            <mat-option [value]="status">{{ status.replace('_', ' ') }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    @if (loading()) {
+      <div class="table-skeleton" aria-live="polite" aria-busy="true">
+        <span class="sr-only">Loading trips</span>
+        @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+          <div class="skeleton-row" aria-hidden="true">
+            <span class="skeleton skeleton-id"></span>
+            <span class="skeleton skeleton-name"></span>
+            <span class="skeleton skeleton-name"></span>
+            <span class="skeleton skeleton-chip"></span>
+            <span class="skeleton skeleton-date"></span>
+          </div>
         }
-      </mat-select>
-    </mat-form-field>
-  </div>
+      </div>
+    } @else if (trips().length === 0) {
+      <div class="empty-ledger">
+        <img src="/assets/trips/trip-journey.png" alt="" aria-hidden="true" />
+        <h2>No trips match this filter</h2>
+        <p>Choose another status to return to the active dispatch ledger.</p>
+        @if (selectedStatus()) {
+          <button mat-button color="primary" (click)="onStatusFilterChange(null)">Clear filter</button>
+        }
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="trips()" class="dh-full-width">
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>Trip</th>
+            <td mat-cell *matCellDef="let trip"><span class="trip-reference">#{{ trip.id }}</span></td>
+          </ng-container>
 
-  @if (loading()) {
-    <div class="dh-loading-state">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading trips...</p>
-    </div>
-  } @else if (trips().length === 0) {
-    <div class="dh-empty-state">
-      <mat-icon>local_taxi</mat-icon>
-      <p>No trips found for this filter.</p>
-    </div>
-  } @else {
-    <div class="table-wrapper">
-      <table mat-table [dataSource]="trips()" class="dh-full-width">
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef>ID</th>
-          <td mat-cell *matCellDef="let trip">#{{ trip.id }}</td>
-        </ng-container>
+          <ng-container matColumnDef="rider">
+            <th mat-header-cell *matHeaderCellDef>Rider</th>
+            <td mat-cell *matCellDef="let trip"><span class="person-name">{{ trip.riderName }}</span></td>
+          </ng-container>
 
-        <ng-container matColumnDef="rider">
-          <th mat-header-cell *matHeaderCellDef>Rider</th>
-          <td mat-cell *matCellDef="let trip">{{ trip.riderName }}</td>
-        </ng-container>
+          <ng-container matColumnDef="driver">
+            <th mat-header-cell *matHeaderCellDef>Driver</th>
+            <td mat-cell *matCellDef="let trip" [class.unassigned]="!trip.driverName">{{ trip.driverName || 'Unassigned' }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="driver">
-          <th mat-header-cell *matHeaderCellDef>Driver</th>
-          <td mat-cell *matCellDef="let trip">{{ trip.driverName || '—' }}</td>
-        </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let trip">
+              <app-trip-status-chip [status]="trip.status"></app-trip-status-chip>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Status</th>
-          <td mat-cell *matCellDef="let trip">
-            <app-trip-status-chip [status]="trip.status"></app-trip-status-chip>
-          </td>
-        </ng-container>
+          <ng-container matColumnDef="requestedAt">
+            <th mat-header-cell *matHeaderCellDef>Requested</th>
+            <td mat-cell *matCellDef="let trip"><span class="timestamp">{{ formatTimestamp(trip.requestedAt) }}</span></td>
+          </ng-container>
 
-        <ng-container matColumnDef="requestedAt">
-          <th mat-header-cell *matHeaderCellDef>Requested</th>
-          <td mat-cell *matCellDef="let trip">{{ formatTimestamp(trip.requestedAt) }}</td>
-        </ng-container>
+          <ng-container matColumnDef="fareEstimate">
+            <th mat-header-cell *matHeaderCellDef>Estimate</th>
+            <td mat-cell *matCellDef="let trip"><span class="fare">{{ trip.fareEstimate ? ('$' + trip.fareEstimate.toFixed(2)) : 'Pending' }}</span></td>
+          </ng-container>
 
-        <ng-container matColumnDef="fareEstimate">
-          <th mat-header-cell *matHeaderCellDef>Fare est.</th>
-          <td mat-cell *matCellDef="let trip">{{ trip.fareEstimate ? ('$' + trip.fareEstimate.toFixed(2)) : '—' }}</td>
-        </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef><span class="sr-only">Actions</span></th>
+            <td mat-cell *matCellDef="let trip" class="action-cell">
+              <button mat-icon-button (click)="viewTrip(trip)" [attr.aria-label]="'View trip ' + trip.id">
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let trip">
-            <button mat-button color="primary" (click)="viewTrip(trip)">View</button>
-          </td>
-        </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="trip-row" (click)="viewTrip(row)" tabindex="0" (keydown.enter)="viewTrip(row)"></tr>
+        </table>
+      </div>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
-    </div>
-
-    <mat-paginator
-      [length]="totalElements()"
-      [pageSize]="pageSize()"
-      [pageIndex]="pageIndex()"
-      [pageSizeOptions]="[10, 20, 50]"
-      (page)="onPageChange($event)">
-    </mat-paginator>
-  }
+      <mat-paginator
+        aria-label="Trip list pagination"
+        [length]="totalElements()"
+        [pageSize]="pageSize()"
+        [pageIndex]="pageIndex()"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="onPageChange($event)">
+      </mat-paginator>
+    }
+  </section>
 </div>

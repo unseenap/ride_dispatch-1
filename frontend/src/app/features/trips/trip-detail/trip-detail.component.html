@@ -1,109 +1,134 @@
-<div class="dh-page">
-  <div class="dh-page-header">
-    <button mat-icon-button (click)="goBack()">
+<div class="dh-page detail-page">
+  <header class="detail-header">
+    <button mat-icon-button (click)="goBack()" aria-label="Back to trips" class="back-button">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <h1>Trip detail</h1>
-  </div>
+    <div>
+      <span class="header-kicker">Trip record</span>
+      <h1>Trip details</h1>
+      <p>Route, assignment, fare, and dispatch activity in one view.</p>
+    </div>
+  </header>
 
   @if (loading()) {
-    <div class="dh-loading-state">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading trip...</p>
+    <div class="detail-skeleton" aria-live="polite" aria-busy="true">
+      <span class="sr-only">Loading trip details</span>
+      <div class="skeleton-panel skeleton-panel--large">
+        <span class="skeleton skeleton-title"></span>
+        <span class="skeleton skeleton-chip"></span>
+        @for (item of [1, 2, 3, 4]; track item) {
+          <div class="skeleton-line"><span class="skeleton skeleton-icon"></span><span class="skeleton skeleton-copy"></span></div>
+        }
+      </div>
+      <div class="skeleton-panel">
+        <span class="skeleton skeleton-title"></span>
+        @for (item of [1, 2, 3]; track item) {
+          <div class="skeleton-line"><span class="skeleton skeleton-dot"></span><span class="skeleton skeleton-copy"></span></div>
+        }
+      </div>
     </div>
   } @else if (notFound()) {
-    <mat-card class="dh-empty-state">
-      <mat-icon>error_outline</mat-icon>
-      <p>We couldn't find that trip.</p>
-    </mat-card>
+    <section class="not-found" role="status">
+      <img src="/assets/trips/trip-journey.png" alt="" aria-hidden="true" />
+      <h2>Trip not found</h2>
+      <p>The trip may have been removed, or the link may no longer be valid.</p>
+      <button mat-flat-button color="primary" (click)="goBack()">Return to trips</button>
+    </section>
   } @else if (trip(); as t) {
-    <div class="trip-grid">
-      <mat-card class="trip-summary-card">
-        <div class="summary-header">
-          <span class="trip-id">Trip #{{ t.id }}</span>
+    <section class="trip-overview" aria-labelledby="trip-reference">
+      <div class="overview-copy">
+        <span class="overview-label">Dispatch reference</span>
+        <div class="overview-title">
+          <h2 id="trip-reference">Trip #{{ t.id }}</h2>
           <app-trip-status-chip [status]="t.status"></app-trip-status-chip>
         </div>
+        <p>Requested {{ formatTimestamp(t.requestedAt) }}</p>
+      </div>
 
-        <mat-divider></mat-divider>
+      <div class="overview-fare">
+        <span>Current fare</span>
+        <strong>{{ t.finalFare ? ('$' + t.finalFare.toFixed(2)) : (t.fareEstimate ? ('$' + t.fareEstimate.toFixed(2)) : 'Pending') }}</strong>
+        <small>{{ t.finalFare ? 'Final charge' : 'Estimated total' }}</small>
+      </div>
+    </section>
 
-        <div class="summary-row">
-          <mat-icon>my_location</mat-icon>
+    <div class="trip-grid">
+      <section class="trip-summary-card" aria-labelledby="journey-heading">
+        <div class="section-heading">
           <div>
-            <span class="label">Pickup</span>
-            <p>{{ t.pickupAddress }}</p>
+            <h2 id="journey-heading">Journey</h2>
+            <p>Pickup and destination</p>
+          </div>
+          @if (t.distanceKm) {
+            <span class="distance-badge"><mat-icon aria-hidden="true">route</mat-icon>{{ t.distanceKm.toFixed(1) }} km</span>
+          }
+        </div>
+
+        <div class="route-block">
+          <div class="route-track" aria-hidden="true"><span></span></div>
+          <div class="route-stop">
+            <span class="route-stop__label">Pickup</span>
+            <strong>{{ t.pickupAddress }}</strong>
+          </div>
+          <div class="route-stop">
+            <span class="route-stop__label">Dropoff</span>
+            <strong>{{ t.dropoffAddress }}</strong>
           </div>
         </div>
-        <div class="summary-row">
-          <mat-icon>flag</mat-icon>
-          <div>
-            <span class="label">Dropoff</span>
-            <p>{{ t.dropoffAddress }}</p>
-          </div>
-        </div>
 
-        <mat-divider></mat-divider>
-
-        <div class="summary-row">
-          <mat-icon>person</mat-icon>
-          <div>
-            <span class="label">Rider</span>
-            <p>{{ t.riderName }}</p>
+        <div class="people-grid">
+          <div class="person-block">
+            <span class="person-icon" aria-hidden="true"><mat-icon>person</mat-icon></span>
+            <div><span>Rider</span><strong>{{ t.riderName }}</strong></div>
           </div>
-        </div>
-        @if (t.driverName) {
-          <div class="summary-row">
-            <mat-icon>badge</mat-icon>
+          <div class="person-block" [class.person-block--empty]="!t.driverName">
+            <span class="person-icon" aria-hidden="true"><mat-icon>badge</mat-icon></span>
             <div>
-              <span class="label">Driver</span>
-              <p>{{ t.driverName }} — {{ t.driverVehicle }} ({{ t.driverLicensePlate }})</p>
+              <span>Driver</span>
+              <strong>{{ t.driverName || 'Awaiting assignment' }}</strong>
+              @if (t.driverName) { <small>{{ t.driverVehicle }} ({{ t.driverLicensePlate }})</small> }
             </div>
           </div>
-        }
-
-        <mat-divider></mat-divider>
-
-        <div class="summary-row">
-          <mat-icon>payments</mat-icon>
-          <div>
-            <span class="label">Fare</span>
-            <p>
-              Estimate: {{ t.fareEstimate ? ('$' + t.fareEstimate.toFixed(2)) : '—' }}
-              @if (t.finalFare) { &middot; Final: ${{ t.finalFare.toFixed(2) }} }
-            </p>
-          </div>
         </div>
-        @if (t.distanceKm) {
-          <div class="summary-row">
-            <mat-icon>straighten</mat-icon>
-            <div>
-              <span class="label">Distance</span>
-              <p>{{ t.distanceKm.toFixed(1) }} km</p>
-            </div>
-          </div>
-        }
-      </mat-card>
 
-      <mat-card class="timeline-card">
-        <h2>Status timeline</h2>
+        <div class="fare-breakdown">
+          <div><span>Fare estimate</span><strong>{{ t.fareEstimate ? ('$' + t.fareEstimate.toFixed(2)) : 'Pending' }}</strong></div>
+          <div><span>Final fare</span><strong>{{ t.finalFare ? ('$' + t.finalFare.toFixed(2)) : 'Not finalized' }}</strong></div>
+        </div>
+      </section>
+
+      <section class="timeline-card" aria-labelledby="timeline-heading">
+        <div class="section-heading">
+          <div>
+            <h2 id="timeline-heading">Status timeline</h2>
+            <p>Latest dispatch updates</p>
+          </div>
+          <mat-icon class="section-icon" aria-hidden="true">history</mat-icon>
+        </div>
+
         @if (t.statusHistory.length === 0) {
-          <div class="dh-empty-state">
-            <mat-icon>history</mat-icon>
-            <p>No status changes recorded yet.</p>
+          <div class="timeline-empty">
+            <mat-icon aria-hidden="true">schedule</mat-icon>
+            <h3>Waiting for the first update</h3>
+            <p>Status changes will appear here as the trip progresses.</p>
           </div>
         } @else {
-          <ul class="timeline">
-            @for (entry of t.statusHistory; track entry.changedAt) {
-              <li>
-                <app-trip-status-chip [status]="entry.status"></app-trip-status-chip>
-                <span class="timeline-time">{{ formatTimestamp(entry.changedAt) }}</span>
-                @if (entry.note) {
-                  <span class="timeline-note">{{ entry.note }}</span>
-                }
+          <ol class="timeline">
+            @for (entry of t.statusHistory; track entry.changedAt; let last = $last) {
+              <li [class.timeline-item--latest]="last">
+                <span class="timeline-marker" aria-hidden="true"></span>
+                <div class="timeline-content">
+                  <div class="timeline-topline">
+                    <app-trip-status-chip [status]="entry.status"></app-trip-status-chip>
+                    <time class="timeline-time">{{ formatTimestamp(entry.changedAt) }}</time>
+                  </div>
+                  @if (entry.note) { <p class="timeline-note">{{ entry.note }}</p> }
+                </div>
               </li>
             }
-          </ul>
+          </ol>
         }
-      </mat-card>
+      </section>
     </div>
   }
 </div>
