@@ -101,14 +101,11 @@ public class TripController {
         return ResponseEntity.ok(tripService.completeTrip(id, currentUser.id(), request));
     }
 
-    // Riders cancel their own trips, drivers can cancel a trip assigned to
-    // them. The service layer checks trip state but not that the calling
-    // rider actually owns this trip.
     @PostMapping("/{id}/cancel")
     @PreAuthorize("hasAnyRole('RIDER', 'DRIVER', 'ADMIN')")
     public ResponseEntity<TripResponse> cancelTrip(@PathVariable Long id,
                                                      @Valid @RequestBody(required = false) CancelTripRequest request) {
-        return ResponseEntity.ok(tripService.cancelTrip(id, currentUser.id(), request));
+        return ResponseEntity.ok(tripService.cancelTrip(id, currentUser.id(), currentUser.role(), request));
     }
 
     @PostMapping("/{id}/review")
