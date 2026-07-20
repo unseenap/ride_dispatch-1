@@ -1,10 +1,14 @@
 <mat-sidenav-container class="layout-container">
-  <mat-sidenav mode="side" opened class="layout-sidenav">
+  <mat-sidenav mode="side" opened class="layout-sidenav" aria-label="Primary navigation">
     <div class="brand">
-      <mat-icon>local_taxi</mat-icon>
-      <span>DispatchHub</span>
+      <span class="brand-mark" aria-hidden="true"><mat-icon>local_taxi</mat-icon></span>
+      <span class="brand-copy">
+        <strong>DispatchHub</strong>
+        <small>Operations</small>
+      </span>
     </div>
 
+    <div class="nav-label">Workspace</div>
     <mat-nav-list>
       @for (link of navLinks(); track link.path) {
         <a mat-list-item [routerLink]="link.path" routerLinkActive="active-link">
@@ -13,20 +17,37 @@
         </a>
       }
     </mat-nav-list>
+
+    <div class="sidenav-footer">
+      <div class="system-state">
+        <span class="system-state__signal" aria-hidden="true"></span>
+        <span>
+          <strong>System operational</strong>
+          <small>All services available</small>
+        </span>
+      </div>
+    </div>
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <mat-toolbar color="primary" class="layout-toolbar">
+    <mat-toolbar class="layout-toolbar">
+      <div class="toolbar-context">
+        <span class="toolbar-context__label">Dispatch workspace</span>
+        <span class="toolbar-context__date">Live operations</span>
+      </div>
       <span class="spacer"></span>
 
       @if (currentUser(); as user) {
-        <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-trigger">
-          <mat-icon>account_circle</mat-icon>
-          <span>{{ user.fullName }}</span>
-          <mat-icon>arrow_drop_down</mat-icon>
+        <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-trigger" aria-label="Open account menu">
+          <span class="user-avatar" aria-hidden="true">{{ user.fullName.charAt(0) }}</span>
+          <span class="user-meta">
+            <strong>{{ user.fullName }}</strong>
+            <small>{{ user.role }}</small>
+          </span>
+          <mat-icon>expand_more</mat-icon>
         </button>
         <mat-menu #userMenu="matMenu">
-          <div class="menu-role-label">{{ user.role }}</div>
+          <div class="menu-role-label">Signed in as {{ user.role }}</div>
           <button mat-menu-item (click)="logout()">
             <mat-icon>logout</mat-icon>
             <span>Log out</span>
