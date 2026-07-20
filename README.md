@@ -297,3 +297,22 @@ The app starts on `http://localhost:4200` and expects the backend at
    seeded user (see `seed-data/seed.sql` — all seeded users share the
    password `Password123!`, e.g. `admin@dispatchhub.com` / `Password123!`).
 
+### Running with Docker (one command)
+
+```bash
+docker compose up --build
+```
+
+This starts PostgreSQL (internal only), the backend on
+`http://localhost:8080`, and the frontend on `http://localhost:4200`
+(nginx serves the production Angular bundle and proxies `/api` to the
+backend, so no CORS setup is needed). The database is seeded automatically
+on first run by the application's `DataLoader`.
+
+By default the backend runs with the `dev` profile so no configuration is
+required. For a production-like run supply real values:
+
+```bash
+SPRING_PROFILES_ACTIVE= JWT_SECRET=$(openssl rand -base64 64) docker compose up --build
+```
+
