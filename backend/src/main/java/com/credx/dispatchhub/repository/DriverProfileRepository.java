@@ -2,8 +2,10 @@ package com.credx.dispatchhub.repository;
 
 import com.credx.dispatchhub.entity.DriverProfile;
 import com.credx.dispatchhub.enums.DriverStatus;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +16,10 @@ import java.util.Optional;
 public interface DriverProfileRepository extends JpaRepository<DriverProfile, Long> {
 
     Optional<DriverProfile> findByUserId(Long userId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select d from DriverProfile d where d.user.id = :userId")
+    Optional<DriverProfile> findByUserIdForUpdate(@Param("userId") Long userId);
 
     Page<DriverProfile> findByStatus(DriverStatus status, Pageable pageable);
 

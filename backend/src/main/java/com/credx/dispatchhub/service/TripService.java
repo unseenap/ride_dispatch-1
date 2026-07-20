@@ -131,19 +131,16 @@ public class TripService {
 
     @Transactional
     public TripResponse acceptTrip(Long tripId, Long driverUserId) {
-        Trip trip = tripRepository.findById(tripId)
+        Trip trip = tripRepository.findByIdForUpdate(tripId)
                 .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + tripId));
 
         if (trip.getStatus() != TripStatus.REQUESTED) {
             throw new InvalidTripStateException("Trip is no longer available to accept");
         }
 
-        DriverProfile driver = driverProfileRepository.findByUserId(driverUserId)
+        DriverProfile driver = driverProfileRepository.findByUserIdForUpdate(driverUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Driver profile not found"));
 
-        // Check-then-act on driver availability: two concurrent accept requests
-        // for two different trips can both read AVAILABLE here before either
-        // write lands, so both trips end up assigned to the same driver.
         if (driver.getStatus() != DriverStatus.AVAILABLE) {
             throw new DriverUnavailableException("Driver is not currently available");
         }
