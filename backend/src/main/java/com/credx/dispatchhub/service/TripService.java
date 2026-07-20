@@ -103,16 +103,19 @@ public class TripService {
         return tripRepository.findByDriverId(driverProfileId, pageable).map(this::toResponse);
     }
 
-    /**
-     * Returns a single trip by id. Used by both the rider-facing trip detail
-     * page and the admin dashboard, so it does NOT restrict by requester -
-     * callers (controller layer) are expected to apply their own authorization
-     * before exposing this to a non-admin caller.
-     */
     @Transactional(readOnly = true)
-    public TripResponse getTripById(Long tripId) {
+    public TripResponse getTripById(Long tripId, Long requesterUserId, UserRole requesterRole) {
         Trip trip = tripRepository.findByIdWithRiderAndDriver(tripId)
                 .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + tripId));
+
+        boolean ownsTripAsRider = trip.getRider().getId().equals(requesterUserId);
+        boolean ownsTripAsDriver = trip.getDriver() != null
+                && trip.getDriver().getUser().getId().equals(requesterUserId);
+
+        if (requesterRole != UserRole.ADMIN && !ownsTripAsRider && !ownsTripAsDriver) {
+            throw new AccessDeniedException("You do not have permission to view this trip");
+        }
+
         return toResponse(trip);
     }
 
