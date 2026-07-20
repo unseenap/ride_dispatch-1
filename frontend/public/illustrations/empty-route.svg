@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 190" role="img" aria-labelledby="title desc">
+  <title id="title">No matching routes</title>
+  <desc id="desc">A simplified city route with a dispatch vehicle waiting at the start.</desc>
+  <defs>
+    <linearGradient id="surface" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8fafc"/>
+      <stop offset="1" stop-color="#eef4ff"/>
+    </linearGradient>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#1d4ed8" flood-opacity=".16"/>
+    </filter>
+  </defs>
+  <rect x="1" y="1" width="318" height="188" rx="24" fill="url(#surface)" stroke="#e5eaf2"/>
+  <path d="M38 133c31-55 67 17 102-34 29-43 52 14 83-18 21-22 35-28 58-22" fill="none" stroke="#b9c9e7" stroke-width="3" stroke-linecap="round" stroke-dasharray="5 8"/>
+  <circle cx="39" cy="133" r="9" fill="#fff" stroke="#2563eb" stroke-width="4"/>
+  <circle cx="281" cy="59" r="9" fill="#fff" stroke="#16a36f" stroke-width="4"/>
+  <g filter="url(#shadow)" transform="translate(119 74)">
+    <rect width="64" height="46" rx="14" fill="#2563eb"/>
+    <path d="M17 16h30l6 12H11l6-12Z" fill="#dbeafe"/>
+    <path d="M22 17h9v10H17l5-10Zm13 0h8l5 10H35V17Z" fill="#eff6ff"/>
+    <circle cx="17" cy="36" r="4" fill="#172554"/>
+    <circle cx="47" cy="36" r="4" fill="#172554"/>
+  </g>
+  <rect x="38" y="38" width="58" height="9" rx="4.5" fill="#dbe3ef"/>
+  <rect x="38" y="53" width="38" height="7" rx="3.5" fill="#e6ebf2"/>
+  <rect x="233" y="126" width="49" height="8" rx="4" fill="#dbe3ef"/>
+  <rect x="247" y="140" width="35" height="7" rx="3.5" fill="#e6ebf2"/>
+</svg>
